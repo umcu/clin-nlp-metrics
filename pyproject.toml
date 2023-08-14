@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clin-nlp-metrics"
+version = "0.1.0"
+authors = [
+  { name="Richard Bartels", email="r.t.bartels-6@umcutrecht.nl" },
+]
+description = "Evaluate NLP methods for clinical use"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies =[]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+dev = ["black", "flake8", "isort", "rsconnect-python"]
+
+[tool.isort]
+profile = "black"
