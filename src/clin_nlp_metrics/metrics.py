@@ -79,9 +79,10 @@ class Dataset:
 
         Parameters
         ----------
-        nlp_docs: An iterable of docs produced by clinlp (a generator from nlp.pipe also works)
-        ids: An iterable of identifiers, that should have the same length as nlp_docs. If none is provided,
-        a simple counter will be used.
+        nlp_docs: An iterable of docs produced by clinlp (a generator from nlp.pipe
+        also works)
+        ids: An iterable of identifiers, that should have the same length as nlp_docs.
+        If none is provided, a simple counter will be used.
 
         Returns
         -------
@@ -119,7 +120,8 @@ class Dataset:
 
         Parameters
         ----------
-        data: The output from medcattrainer, as downloaded from the interface in json format and provided as a dict.
+        data: The output from medcattrainer, as downloaded from the interface in
+        json format and provided as a dict.
 
         Returns
         -------
