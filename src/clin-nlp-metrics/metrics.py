@@ -93,6 +93,21 @@ class Dataset:
         ]
 
 
+def stats(data: Dataset) -> dict:
+    results = {
+        "num_docs": len(data.docs),
+        "num_annotations": sum(len(doc.annotations) for doc in data.docs),
+    }
 
-def metrics(true: Dataset, pred: Dataset) -> dict:
-    pass
+    return results
+
+
+def entity_metrics(true: Dataset, pred: Dataset) -> dict:
+    true = true.to_nervaluate()
+    pred = pred.to_nervaluate()
+
+    tags = list({annotation["label"] for doc in true + pred for annotation in doc})
+    evaluator = Evaluator(true=true, pred=pred, tags=tags)
+    results, _ = evaluator.evaluate()
+
+    return results
