@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-dependencies = ["spacy~=3.0"]
+dependencies = ["spacy~=3.0", "clinlp~=0.5"]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
