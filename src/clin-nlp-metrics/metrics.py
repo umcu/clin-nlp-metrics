@@ -11,7 +11,7 @@ class Annotation:
     start: int
     end: int
     label: str
-    qualifiers: Optional[list[str]] = None
+    qualifiers: Optional[list[dict]] = None
 
     def to_nervaluate(self) -> dict:
         return {"start": self.start, "end": self.end, "label": self.label}
@@ -40,12 +40,20 @@ class Dataset:
             annotations = []
 
             for ent in doc.ents:
+
+                qualifiers = []
+
+                for qualifier in ent._.qualifiers_str:
+                    name, value = qualifier.split(".")
+                    qualifiers.append({'name': name, 'value': value})
+
                 annotations.append(
                     Annotation(
                         text=str(ent),
                         start=ent.start_char,
                         end=ent.end_char,
                         label=ent.label_,
+                        qualifiers=qualifiers
                     )
                 )
 
@@ -69,13 +77,21 @@ class Dataset:
             annotations = []
 
             for annotation in doc["annotations"]:
+
                 if not annotation["deleted"]:
+
+                    qualifiers = []
+
+                    for qualifier in annotation['meta_anns'].values():
+                        qualifiers.append({'name': qualifier['name'], 'value': qualifier['value']})
+
                     annotations.append(
                         Annotation(
                             text=annotation["value"],
                             start=annotation["start"],
                             end=annotation["end"],
                             label=annotation["cui"],
+                            qualifiers=qualifiers
                         )
                     )
 
