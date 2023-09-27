@@ -102,6 +102,7 @@ def stats(data: Dataset) -> dict:
 
     return results
 
+
 # Example metric 2
 def entity_metrics(true: Dataset, pred: Dataset) -> dict:
     true = true.to_nervaluate()
