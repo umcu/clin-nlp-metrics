@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Iterable, Optional
 
 import spacy
-from nervaluate import Evaluator
 
 
 @dataclass
