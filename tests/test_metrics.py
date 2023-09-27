@@ -1,3 +1,8 @@
+import json
+import pickle
+
+import clinlp
+
 from src.clin_nlp_metrics.metrics import Annotation, Dataset, Document
 
 
@@ -26,6 +31,20 @@ class TestDocument:
 
 
 class TestDataset:
+    def test_from_medcattrainer(self):
+        with open("tests/data/medcattrainer_export.json", "rb") as f:
+            mctrainer_data = json.load(f)
+
+        # TODO needs more specific tests, when more functionality is there
+        assert Dataset.from_medcattrainer(data=mctrainer_data)
+
+    def test_from_clinlp(self):
+        with open("tests/data/clinlp_docs.pickle", "rb") as f:
+            clinlp_docs = pickle.load(f)
+
+        # TODO needs more specific tests, when more functionality is there
+        assert Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+
     def test_dataset_nervaluate(self):
         dataset = Dataset(
             docs=[
