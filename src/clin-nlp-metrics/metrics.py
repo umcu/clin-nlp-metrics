@@ -93,6 +93,7 @@ class Dataset:
         ]
 
 
+# Example metric 1
 def stats(data: Dataset) -> dict:
     results = {
         "num_docs": len(data.docs),
@@ -101,7 +102,7 @@ def stats(data: Dataset) -> dict:
 
     return results
 
-
+# Example metric 2
 def entity_metrics(true: Dataset, pred: Dataset) -> dict:
     true = true.to_nervaluate()
     pred = pred.to_nervaluate()
