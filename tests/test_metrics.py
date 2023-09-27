@@ -1,9 +1,9 @@
 import json
 import pickle
 
-import clinlp
+import clinlp  # noqa: F401
 
-from src.clin_nlp_metrics.metrics import Annotation, Dataset, Document
+from clin_nlp_metrics.metrics import Annotation, Dataset, Document
 
 
 class TestAnnotation:
