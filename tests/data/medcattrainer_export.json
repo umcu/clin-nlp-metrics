@@ -1,0 +1,249 @@
+{
+  "projects": [
+    {
+      "name": "test_project",
+      "id": 5,
+      "cuis": "",
+      "documents": [
+        {
+          "id": 5188,
+          "name": "doc_45934838",
+          "text": "random text sample",
+          "last_modified": "2023-07-11 13:34:43.588925",
+          "annotations": [
+            {
+              "id": 3711,
+              "user": "test_user",
+              "cui": "C0002871_anemie",
+              "value": "erytransfusie",
+              "start": 1055,
+              "end": 1068,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-07-12 08:14:12.072532",
+              "last_modified": "2023-07-12 08:14:32.213111",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            },
+            {
+              "id": 3713,
+              "user": "test_user",
+              "cui": "C0002871_anemie",
+              "value": "anemie",
+              "start": 978,
+              "end": 984,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-07-12 08:14:12.087135",
+              "last_modified": "2023-07-12 08:14:17.291186",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5189,
+          "name": "doc_89358935839",
+          "text": "some test text",
+          "last_modified": "2023-07-11 13:34:43.589582",
+          "annotations": [
+            {
+              "id": 3797,
+              "user": "test_user",
+              "cui": "C0015934_intrauterine_groeivertraging",
+              "value": "<< p3",
+              "start": 1739,
+              "end": 1744,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-07-12 09:55:48.161650",
+              "last_modified": "2023-07-12 09:55:48.161688",
+              "comment": null,
+              "manually_created": true,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            },
+            {
+              "id": 3798,
+              "user": "test_user",
+              "cui": "C0015934_intrauterine_groeivertraging",
+              "value": "<p3",
+              "start": 1828,
+              "end": 1831,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-07-12 09:56:00.757141",
+              "last_modified": "2023-07-12 09:56:00.757174",
+              "comment": null,
+              "manually_created": true,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            },
+            {
+              "id": 3799,
+              "user": "test_user",
+              "cui": "C0015934_intrauterine_groeivertraging",
+              "value": "<p3",
+              "start": 1856,
+              "end": 1859,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-07-12 09:56:07.258691",
+              "last_modified": "2023-07-12 09:56:07.258730",
+              "comment": null,
+              "manually_created": true,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        }
+      ]
+    }
+  ]
+}
