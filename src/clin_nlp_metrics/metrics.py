@@ -24,6 +24,9 @@ class Document:
     text: str
     annotations: list[Annotation]
 
+    def to_nervaluate(self) -> list[dict]:
+        return [ann.to_nervaluate() for ann in self.annotations]
+
 
 @dataclass
 class Dataset:
@@ -89,9 +92,8 @@ class Dataset:
         return Dataset(docs)
 
     def to_nervaluate(self) -> list[list[dict]]:
-        return [
-            list(ann.to_nervaluate() for ann in doc.annotations) for doc in self.docs
-        ]
+
+        return [doc.to_nervaluate() for doc in self.docs]
 
 
 # Example metric 1
