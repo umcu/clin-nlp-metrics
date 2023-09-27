@@ -46,7 +46,10 @@ class Dataset:
 
                 for qualifier in ent._.qualifiers_str:
                     name, value = qualifier.split(".")
-                    qualifiers.append({'name': name, 'value': value})
+                    qualifiers.append({
+                        'name': name.title(),
+                        'value': value.title()
+                    })
 
                 annotations.append(
                     Annotation(
@@ -84,7 +87,10 @@ class Dataset:
                     qualifiers = []
 
                     for qualifier in annotation['meta_anns'].values():
-                        qualifiers.append({'name': qualifier['name'], 'value': qualifier['value']})
+                        qualifiers.append({
+                            'name': qualifier['name'].title(),
+                            'value': qualifier['value'].title()
+                        })
 
                     annotations.append(
                         Annotation(
