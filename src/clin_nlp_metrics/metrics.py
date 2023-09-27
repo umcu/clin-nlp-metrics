@@ -2,8 +2,8 @@ import itertools
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from nervaluate import Evaluator
 import spacy
+from nervaluate import Evaluator
 
 
 @dataclass
@@ -41,7 +41,7 @@ class Annotation:
 
 @dataclass
 class Document:
-    """ A document corresponds to any piece of text that is annotated. """
+    """A document corresponds to any piece of text that is annotated."""
 
     identifier: str
     """ Any identifier for the document. """
@@ -66,7 +66,7 @@ class Document:
 
 @dataclass
 class Dataset:
-    """ A dataset consists of a number of annotated documents. """
+    """A dataset consists of a number of annotated documents."""
 
     docs: list[Document]
     """ The annotated documents. """
@@ -106,7 +106,9 @@ class Dataset:
                 )
 
             docs.append(
-                Document(identifier=str(identifier), text=doc.text, annotations=annotations)
+                Document(
+                    identifier=str(identifier), text=doc.text, annotations=annotations
+                )
             )
 
         return Dataset(docs)
