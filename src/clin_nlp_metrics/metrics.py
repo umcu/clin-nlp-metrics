@@ -99,11 +99,11 @@ class Dataset:
 
                 qualifiers = []
 
-                for qualifier in ent._.qualifiers_str:
-                    name, value = qualifier.split(".")
+                for qualifier in ent._.qualifiers_dict:
+
                     qualifiers.append({
-                        'name': name.title(),
-                        'value': value.title()
+                        'name': qualifier['name'].title(),
+                        'value': qualifier['value'].title()
                     })
 
                 annotations.append(
