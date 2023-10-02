@@ -33,7 +33,6 @@ class Annotation:
         Returns
         -------
         A dictionary with the items nervaluate expects.
-
         """
         return {"start": self.start, "end": self.end, "label": self.label}
 
@@ -103,7 +102,8 @@ class Dataset:
 
                     qualifiers.append({
                         'name': qualifier['name'].title(),
-                        'value': qualifier['value'].title()
+                        'value': qualifier['value'].title(),
+                        'is_default': qualifier['is_default']
                     })
 
                 annotations.append(
