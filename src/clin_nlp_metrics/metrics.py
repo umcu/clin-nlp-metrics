@@ -1,6 +1,7 @@
 import itertools
+from collections import Counter, defaultdict
 from dataclasses import dataclass
-from typing import Iterable, Optional
+from typing import Callable, Iterable, Optional
 
 import spacy
 
@@ -69,6 +70,15 @@ class Dataset:
     docs: list[Document]
     """ The annotated documents. """
 
+    _ALL_STATS = [
+        "num_docs",
+        "num_annotations",
+        "span_counts",
+        "label_counts",
+        "qualifier_counts",
+    ]
+    """ The class methods to call when computing dataset stats """
+
     @staticmethod
     def from_clinlp_docs(
         nlp_docs: Iterable[spacy.language.Doc], ids: Optional[Iterable[str]] = None
@@ -125,7 +135,7 @@ class Dataset:
         return Dataset(docs)
 
     @staticmethod
-    def from_medcattrainer(data: dict) -> "Dataset":
+    def from_medcattrainer(data: dict, strip_spans: bool = True) -> "Dataset":
         """
         Creates a new dataset from medcattrainer output, by converting downloaded json.
 
@@ -199,3 +209,52 @@ class Dataset:
         """
 
         return [doc.to_nervaluate() for doc in self.docs]
+
+    def num_docs(self, **kwargs) -> int:
+        return len(self.docs)
+
+    def num_annotations(self, **kwargs) -> int:
+        return sum(len(doc.annotations) for doc in self.docs)
+
+    def span_counts(
+        self, n_spans: Optional[int] = 25, span_callback: Optional[Callable] = None, **kwargs
+    ) -> dict:
+        cntr = Counter()
+        span_callback = span_callback or (lambda x: x)
+
+        for doc in self.docs:
+            for annotation in doc.annotations:
+                cntr.update([span_callback(annotation.text)])
+
+        if n_spans is None:
+            n_spans = len(cntr)
+
+        return dict(cntr.most_common(n_spans))
+
+    def label_counts(
+        self, n_labels: Optional[int] = 25, label_callback: Optional[Callable] = None, **kwargs
+    ) -> dict:
+        cntr = Counter()
+        label_callback = label_callback or (lambda x: x)
+
+        for doc in self.docs:
+            for annotation in doc.annotations:
+                cntr.update([annotation.label])
+
+        if n_labels is None:
+            n_labels = len(cntr)
+
+        return dict(cntr.most_common(n_labels))
+
+    def qualifier_counts(self, **kwargs) -> dict:
+        cntrs = defaultdict(lambda: Counter())
+
+        for doc in self.docs:
+            for annotation in doc.annotations:
+                for qualifier in annotation.qualifiers:
+                    cntrs[qualifier["name"]].update([qualifier["value"]])
+
+        return {name: dict(counts) for name, counts in cntrs.items()}
+
+    def get_stats(self, **kwargs):
+        return {stat: getattr(self, stat)(**kwargs) for stat in self._ALL_STATS}
