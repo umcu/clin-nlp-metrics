@@ -163,6 +163,14 @@ class Dataset:
                             }
                         )
 
+                    if strip_spans:
+
+                        annotation['start'] += len(annotation['value']) - len(annotation['value'].lstrip())
+                        annotation['value'] = annotation['value'].lstrip()
+
+                        annotation['end'] -= len(annotation['value']) - len(annotation['value'].rstrip())
+                        annotation['value'] = annotation['value'].rstrip()
+
                     annotations.append(
                         Annotation(
                             text=annotation["value"],
