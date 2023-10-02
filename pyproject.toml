@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clin-nlp-metrics"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
   { name="Richard Bartels", email="r.t.bartels-6@umcutrecht.nl" },
 ]
