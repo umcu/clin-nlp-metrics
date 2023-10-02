@@ -98,7 +98,6 @@ class Dataset:
                 qualifiers = []
 
                 for qualifier in ent._.qualifiers_dict:
-
                     qualifiers.append(
                         {
                             "name": qualifier["name"].title(),

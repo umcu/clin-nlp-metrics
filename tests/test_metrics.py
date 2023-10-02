@@ -100,9 +100,14 @@ class TestDataset:
                     identifier="1",
                     text="test1",
                     annotations=[
-                        Annotation(text="test1", start=0, end=5, label="test1", qualifiers=[{'name': "Negation", 'value': 'Negated'}]),
+                        Annotation(
+                            text="test1",
+                            start=0,
+                            end=5,
+                            label="test1",
+                            qualifiers=[{"name": "Negation", "value": "Negated"}],
+                        ),
                     ],
-
                 ),
                 Document(
                     identifier="2",
