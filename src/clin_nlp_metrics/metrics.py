@@ -95,16 +95,17 @@ class Dataset:
             annotations = []
 
             for ent in doc.ents:
-
                 qualifiers = []
 
                 for qualifier in ent._.qualifiers_dict:
 
-                    qualifiers.append({
-                        'name': qualifier['name'].title(),
-                        'value': qualifier['value'].title(),
-                        'is_default': qualifier['is_default']
-                    })
+                    qualifiers.append(
+                        {
+                            "name": qualifier["name"].title(),
+                            "value": qualifier["value"].title(),
+                            "is_default": qualifier["is_default"],
+                        }
+                    )
 
                 annotations.append(
                     Annotation(
@@ -112,7 +113,7 @@ class Dataset:
                         start=ent.start_char,
                         end=ent.end_char,
                         label=ent.label_,
-                        qualifiers=qualifiers
+                        qualifiers=qualifiers,
                     )
                 )
 
@@ -152,16 +153,16 @@ class Dataset:
             annotations = []
 
             for annotation in doc["annotations"]:
-
                 if not annotation["deleted"]:
-
                     qualifiers = []
 
-                    for qualifier in annotation['meta_anns'].values():
-                        qualifiers.append({
-                            'name': qualifier['name'].title(),
-                            'value': qualifier['value'].title()
-                        })
+                    for qualifier in annotation["meta_anns"].values():
+                        qualifiers.append(
+                            {
+                                "name": qualifier["name"].title(),
+                                "value": qualifier["value"].title(),
+                            }
+                        )
 
                     annotations.append(
                         Annotation(
@@ -169,7 +170,7 @@ class Dataset:
                             start=annotation["start"],
                             end=annotation["end"],
                             label=annotation["cui"],
-                            qualifiers=qualifiers
+                            qualifiers=qualifiers,
                         )
                     )
 
