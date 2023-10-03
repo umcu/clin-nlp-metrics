@@ -62,6 +62,10 @@ class Annotation:
         """
         return {"start": self.start, "end": self.end, "label": self.label}
 
+    @property
+    def qualifier_names(self) -> set[str]:
+        return {qualifier["name"] for qualifier in self.qualifiers}
+
 
 @dataclass
 class Document:
