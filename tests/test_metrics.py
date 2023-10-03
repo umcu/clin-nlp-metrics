@@ -4,7 +4,7 @@ import pickle
 import clinlp  # noqa: F401
 import pytest
 
-from clin_nlp_metrics.metrics import Annotation, Dataset, Document
+from clin_nlp_metrics.dataset import Annotation, Dataset, Document
 
 
 @pytest.fixture
