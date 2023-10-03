@@ -28,29 +28,29 @@ class Annotation:
     qualifiers: Optional[list[dict]] = None
     """ Optionally, a list of qualifiers"""
 
-    def lstrip(self):
+    def lstrip(self, chars=" ,"):
         """
         Strips punctuation and whitespaces from the beginning of the annotation.
         """
 
-        self.start += len(self.text) - len(self.text.lstrip())
-        self.text = self.text.lstrip()
+        self.start += len(self.text) - len(self.text.lstrip(chars))
+        self.text = self.text.lstrip(chars)
 
-    def rstrip(self):
+    def rstrip(self, chars=" ,"):
         """
         Strips punctuation and whitespaces from the end of the annotation.
         """
 
-        self.start -= len(self.text) - len(self.text.rstrip())
-        self.text = self.text.rstrip()
+        self.end -= len(self.text) - len(self.text.rstrip(chars))
+        self.text = self.text.rstrip(chars)
 
-    def strip(self):
+    def strip(self, chars=" ,"):
         """
         Strips punctuation and whitespaces from the beginning and end of the annotation.
         """
 
-        self.lstrip()
-        self.rstrip()
+        self.lstrip(chars=chars)
+        self.rstrip(chars=chars)
 
     def to_nervaluate(self) -> dict:
         """
@@ -336,7 +336,8 @@ class Dataset:
 
     def stats(self, **kwargs) -> dict:
         """
-        Compute all the stats of this dataset, as defined in the _ALL_STATS class variable.
+        Compute all the stats of this dataset, as defined in the
+        _ALL_STATS class variable.
 
         Returns
         -------
@@ -347,7 +348,6 @@ class Dataset:
         stats = {}
 
         for stat in self._ALL_STATS:
-
             stat_func = getattr(self, stat)
 
             func_kwargs = {
