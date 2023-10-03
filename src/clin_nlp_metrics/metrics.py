@@ -104,6 +104,61 @@ class Dataset:
     ]
     """ The class methods to call when computing dataset stats """
 
+    @staticmethod
+    def from_clinlp_docs(
+        nlp_docs: Iterable[spacy.language.Doc], ids: Optional[Iterable[str]] = None
+    ) -> "Dataset":
+        """
+        Creates a new dataset from clinlp output, by converting the spaCy Docs.
+
+        Parameters
+        ----------
+        nlp_docs: An iterable of docs produced by clinlp (a generator from nlp.pipe
+        also works)
+        ids: An iterable of identifiers, that should have the same length as nlp_docs.
+        If none is provided, a simple counter will be used.
+
+        Returns
+        -------
+        A Dataset, corresponding to the provided spaCy docs that clinlp produced.
+        """
+        ids = ids or itertools.count()
+
+        docs = []
+
+        for doc, identifier in zip(nlp_docs, ids):
+            annotations = []
+
+            for ent in doc.ents:
+                qualifiers = []
+
+                for qualifier in ent._.qualifiers_dict:
+                    qualifiers.append(
+                        {
+                            "name": qualifier["name"].title(),
+                            "value": qualifier["value"].title(),
+                            "is_default": qualifier["is_default"],
+                        }
+                    )
+
+                annotations.append(
+                    Annotation(
+                        text=str(ent),
+                        start=ent.start_char,
+                        end=ent.end_char,
+                        label=ent.label_,
+                        qualifiers=qualifiers,
+                    )
+                )
+
+            docs.append(
+                Document(
+                    identifier=str(identifier), text=doc.text, annotations=annotations
+                )
+            )
+
+        return Dataset(docs)
+
     def infer_default_qualifiers(self) -> dict:
         """
         Infer the default values for qualifiers, based on the majority class.
@@ -211,61 +266,6 @@ class Dataset:
             default_qualifiers = dataset.infer_default_qualifiers()
 
         dataset.set_default_qualifiers(default_qualifiers)
-
-        return Dataset(docs)
-
-    @staticmethod
-    def from_clinlp_docs(
-        nlp_docs: Iterable[spacy.language.Doc], ids: Optional[Iterable[str]] = None
-    ) -> "Dataset":
-        """
-        Creates a new dataset from clinlp output, by converting the spaCy Docs.
-
-        Parameters
-        ----------
-        nlp_docs: An iterable of docs produced by clinlp (a generator from nlp.pipe
-        also works)
-        ids: An iterable of identifiers, that should have the same length as nlp_docs.
-        If none is provided, a simple counter will be used.
-
-        Returns
-        -------
-        A Dataset, corresponding to the provided spaCy docs that clinlp produced.
-        """
-        ids = ids or itertools.count()
-
-        docs = []
-
-        for doc, identifier in zip(nlp_docs, ids):
-            annotations = []
-
-            for ent in doc.ents:
-                qualifiers = []
-
-                for qualifier in ent._.qualifiers_dict:
-                    qualifiers.append(
-                        {
-                            "name": qualifier["name"].title(),
-                            "value": qualifier["value"].title(),
-                            "is_default": qualifier["is_default"],
-                        }
-                    )
-
-                annotations.append(
-                    Annotation(
-                        text=str(ent),
-                        start=ent.start_char,
-                        end=ent.end_char,
-                        label=ent.label_,
-                        qualifiers=qualifiers,
-                    )
-                )
-
-            docs.append(
-                Document(
-                    identifier=str(identifier), text=doc.text, annotations=annotations
-                )
-            )
 
         return Dataset(docs)
 
