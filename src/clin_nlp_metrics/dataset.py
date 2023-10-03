@@ -23,7 +23,7 @@ class Annotation:
     label: str
     """ The label/tag"""
 
-    qualifiers: Optional[list[str]] = None
+    qualifiers: Optional[list[dict]] = None
     """ Optionally, a list of qualifiers"""
 
     def to_nervaluate(self) -> dict:
@@ -33,7 +33,6 @@ class Annotation:
         Returns
         -------
         A dictionary with the items nervaluate expects.
-
         """
         return {"start": self.start, "end": self.end, "label": self.label}
 
@@ -96,12 +95,24 @@ class Dataset:
             annotations = []
 
             for ent in doc.ents:
+                qualifiers = []
+
+                for qualifier in ent._.qualifiers_dict:
+                    qualifiers.append(
+                        {
+                            "name": qualifier["name"].title(),
+                            "value": qualifier["value"].title(),
+                            "is_default": qualifier["is_default"],
+                        }
+                    )
+
                 annotations.append(
                     Annotation(
                         text=str(ent),
                         start=ent.start_char,
                         end=ent.end_char,
                         label=ent.label_,
+                        qualifiers=qualifiers,
                     )
                 )
 
@@ -142,12 +153,23 @@ class Dataset:
 
             for annotation in doc["annotations"]:
                 if not annotation["deleted"]:
+                    qualifiers = []
+
+                    for qualifier in annotation["meta_anns"].values():
+                        qualifiers.append(
+                            {
+                                "name": qualifier["name"].title(),
+                                "value": qualifier["value"].title(),
+                            }
+                        )
+
                     annotations.append(
                         Annotation(
                             text=annotation["value"],
                             start=annotation["start"],
                             end=annotation["end"],
                             label=annotation["cui"],
+                            qualifiers=qualifiers,
                         )
                     )
 

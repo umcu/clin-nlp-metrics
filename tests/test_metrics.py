@@ -3,7 +3,7 @@ import pickle
 
 import clinlp  # noqa: F401
 
-from clin_nlp_metrics.metrics import Annotation, Dataset, Document
+from clin_nlp_metrics.dataset import Annotation, Dataset, Document
 
 
 class TestAnnotation:
@@ -31,19 +31,67 @@ class TestDocument:
 
 
 class TestDataset:
-    def test_from_medcattrainer(self):
+    def test_dataset_from_medcattrainer(self):
         with open("tests/data/medcattrainer_export.json", "rb") as f:
             mctrainer_data = json.load(f)
 
-        # TODO needs more specific tests, when more functionality is there
-        assert Dataset.from_medcattrainer(data=mctrainer_data)
+        dataset = Dataset.from_medcattrainer(data=mctrainer_data)
 
-    def test_from_clinlp(self):
+        assert len(dataset.docs) == 2
+        assert dataset.docs[0].text == "random text sample"
+        assert len(dataset.docs[0].annotations) == 1
+        assert len(dataset.docs[1].annotations) == 3
+
+        assert dataset.docs[0].annotations[0].text == "anemie"
+        assert dataset.docs[0].annotations[0].start == 978
+        assert dataset.docs[0].annotations[0].end == 984
+        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
+
+        assert dataset.docs[1].annotations[0].text == "<< p3"
+        assert dataset.docs[1].annotations[0].start == 1739
+        assert dataset.docs[1].annotations[0].end == 1744
+        assert (
+            dataset.docs[1].annotations[0].label
+            == "C0015934_intrauterine_groeivertraging"
+        )
+
+        assert dataset.docs[0].annotations[0].qualifiers == [
+            {"name": "Plausibility", "value": "Plausible"},
+            {"name": "Temporality", "value": "Current"},
+            {"name": "Negation", "value": "Negated"},
+            {"name": "Experiencer", "value": "Patient"},
+        ]
+
+    def test_dataset_from_clinlp(self):
         with open("tests/data/clinlp_docs.pickle", "rb") as f:
             clinlp_docs = pickle.load(f)
 
-        # TODO needs more specific tests, when more functionality is there
-        assert Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+
+        assert len(dataset.docs) == 3
+        assert dataset.docs[0].text == "patient had geen anemie"
+        assert len(dataset.docs[0].annotations) == 1
+        assert len(dataset.docs[1].annotations) == 2
+        assert len(dataset.docs[2].annotations) == 1
+
+        assert dataset.docs[0].annotations[0].text == "anemie"
+        assert dataset.docs[0].annotations[0].start == 17
+        assert dataset.docs[0].annotations[0].end == 23
+        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
+
+        assert dataset.docs[1].annotations[0].text == "prematuriteit"
+        assert dataset.docs[1].annotations[0].start == 18
+        assert dataset.docs[1].annotations[0].end == 31
+        assert dataset.docs[1].annotations[0].label == "C0151526_prematuriteit"
+
+        assert sorted(
+            dataset.docs[0].annotations[0].qualifiers, key=lambda q: q["name"]
+        ) == [
+            {"name": "Experiencer", "value": "Patient", "is_default": True},
+            {"name": "Negation", "value": "Negated", "is_default": False},
+            {"name": "Plausibility", "value": "Plausible", "is_default": True},
+            {"name": "Temporality", "value": "Current", "is_default": True},
+        ]
 
     def test_dataset_nervaluate(self):
         dataset = Dataset(
@@ -52,7 +100,13 @@ class TestDataset:
                     identifier="1",
                     text="test1",
                     annotations=[
-                        Annotation(text="test1", start=0, end=5, label="test1"),
+                        Annotation(
+                            text="test1",
+                            start=0,
+                            end=5,
+                            label="test1",
+                            qualifiers=[{"name": "Negation", "value": "Negated"}],
+                        ),
                     ],
                 ),
                 Document(

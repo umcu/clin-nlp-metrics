@@ -20,7 +20,7 @@
               "end": 1068,
               "validated": true,
               "correct": true,
-              "deleted": false,
+              "deleted": true,
               "alternative": false,
               "killed": false,
               "irrelevant": false,
@@ -87,7 +87,7 @@
                 },
                 "Negation": {
                   "name": "Negation",
-                  "value": "Affirmed",
+                  "value": "NEGATED",
                   "acc": 1.0,
                   "validated": true
                 },
