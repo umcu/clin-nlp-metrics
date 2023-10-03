@@ -167,6 +167,8 @@ class Dataset:
         ----------
         data: The output from medcattrainer, as downloaded from the interface in
         json format and provided as a dict.
+        strip_spans: Whether to remove punctuation and whitespaces from the beginning or
+        end of annotations. Used to clean up accidental over-annotations.
 
         Returns
         -------
@@ -229,21 +231,50 @@ class Dataset:
 
         return [doc.to_nervaluate() for doc in self.docs]
 
-    def num_docs(self, **kwargs) -> int:
+    def num_docs(self) -> int:
+        """
+        The number of documents in this dataset.
+
+        Returns
+        -------
+        The number of documents in this dataset.
+
+        """
         return len(self.docs)
 
-    def num_annotations(self, **kwargs) -> int:
+    def num_annotations(self) -> int:
+        """
+        The number of annotations in all documents of this dataset.
+
+        Returns
+        -------
+        The number of annotations in all documents of this dataset.
+
+        """
         return sum(len(doc.annotations) for doc in self.docs)
 
     def span_counts(
         self, n_spans: Optional[int] = 25, span_callback: Optional[Callable] = None, **kwargs
     ) -> dict:
+        """
+        Counts the text spans of all annotations in this dataset.
+
+        Parameters
+        ----------
+        n_spans: The maximum number of spans to return, ordered by frequency
+        span_callback: A callback that is applied to each text span
+
+        Returns
+        -------
+        A dictionary containing the frequency of the requested text spans.
+        """
         cntr = Counter()
         span_callback = span_callback or (lambda x: x)
 
         for doc in self.docs:
-            for annotation in doc.annotations:
-                cntr.update([span_callback(annotation.text)])
+            cntr.update(
+                [span_callback(annotation.text) for annotation in doc.annotations]
+            )
 
         if n_spans is None:
             n_spans = len(cntr)
@@ -253,19 +284,42 @@ class Dataset:
     def label_counts(
         self, n_labels: Optional[int] = 25, label_callback: Optional[Callable] = None, **kwargs
     ) -> dict:
+        """
+        Counts the annotation labels of all annotations in this dataset.
+
+        Parameters
+        ----------
+        n_labels: The maximum number of labels to return, ordered by frequency
+        label_callback: A callback that is applied to each label
+
+        Returns
+        -------
+        A dictionary containing the frequency of the requested annotation labels.
+        """
+
         cntr = Counter()
         label_callback = label_callback or (lambda x: x)
 
         for doc in self.docs:
-            for annotation in doc.annotations:
-                cntr.update([annotation.label])
+            cntr.update(
+                [label_callback(annotation.label) for annotation in doc.annotations]
+            )
 
         if n_labels is None:
             n_labels = len(cntr)
 
         return dict(cntr.most_common(n_labels))
 
-    def qualifier_counts(self, **kwargs) -> dict:
+    def qualifier_counts(self) -> dict:
+        """
+        Counts the values of all qualifiers.
+
+        Returns
+        -------
+        A dictionary, mapping qualifier names to the frequencies of their values.
+        E.g.: {"Negation": {"Affirmed": 34, "Negated": 12}}
+
+        """
         cntrs = defaultdict(lambda: Counter())
 
         for doc in self.docs:
