@@ -66,6 +66,13 @@ class Annotation:
     def qualifier_names(self) -> set[str]:
         return {qualifier["name"] for qualifier in self.qualifiers}
 
+    def get_qualifier_by_name(self, qualifier_name: str) -> dict:
+        for qualifier in self.qualifiers:
+            if qualifier["name"] == qualifier_name:
+                return qualifier
+
+        raise KeyError(f"No qualifier with name {qualifier_name}.")
+
 
 @dataclass
 class Document:
@@ -91,6 +98,17 @@ class Document:
         """
         return [ann.to_nervaluate() for ann in self.annotations]
 
+    @property
+    def labels(self) -> set[str]:
+        return {annotation.label for annotation in self.annotations}
+
+    def get_annotation_from_span(self, start, end) -> Optional[Annotation]:
+        for annotation in self.annotations:
+            if (annotation.start == start) and (annotation.end == end):
+                return annotation
+
+        return None
+
 
 @dataclass
 class Dataset:
@@ -107,6 +125,10 @@ class Dataset:
         "qualifier_counts",
     ]
     """ The class methods to call when computing dataset stats """
+
+    @property
+    def labels(self) -> set[dict]:
+        return set.union(*[doc.labels for doc in self.docs])
 
     @staticmethod
     def from_clinlp_docs(
