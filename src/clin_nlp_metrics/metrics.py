@@ -27,6 +27,30 @@ class Annotation:
     qualifiers: Optional[list[dict]] = None
     """ Optionally, a list of qualifiers"""
 
+    def lstrip(self):
+        """
+        Strips punctuation and whitespaces from the beginning of the annotation.
+        """
+
+        self.start += len(self.text) - len(self.text.lstrip())
+        self.text = self.text.lstrip()
+
+    def rstrip(self):
+        """
+        Strips punctuation and whitespaces from the end of the annotation.
+        """
+
+        self.start -= len(self.text) - len(self.text.rstrip())
+        self.text = self.text.rstrip()
+
+    def strip(self):
+        """
+        Strips punctuation and whitespaces from the beginning and end of the annotation.
+        """
+
+        self.lstrip()
+        self.rstrip()
+
     def to_nervaluate(self) -> dict:
         """
         Converts to format that nervaluate ingests.
@@ -173,23 +197,18 @@ class Dataset:
                             }
                         )
 
-                    if strip_spans:
-
-                        annotation['start'] += len(annotation['value']) - len(annotation['value'].lstrip())
-                        annotation['value'] = annotation['value'].lstrip()
-
-                        annotation['end'] -= len(annotation['value']) - len(annotation['value'].rstrip())
-                        annotation['value'] = annotation['value'].rstrip()
-
-                    annotations.append(
-                        Annotation(
-                            text=annotation["value"],
-                            start=annotation["start"],
-                            end=annotation["end"],
-                            label=annotation["cui"],
-                            qualifiers=qualifiers,
-                        )
+                    annotation = Annotation(
+                        text=annotation["value"],
+                        start=annotation["start"],
+                        end=annotation["end"],
+                        label=annotation["cui"],
+                        qualifiers=qualifiers,
                     )
+
+                    if strip_spans:
+                        annotation.strip()
+
+                    annotations.append(annotation)
 
             docs.append(
                 Document(
