@@ -2,8 +2,17 @@ import json
 import pickle
 
 import clinlp  # noqa: F401
+import pytest
 
 from clin_nlp_metrics.metrics import Annotation, Dataset, Document
+
+
+@pytest.fixture
+def dataset():
+    with open("tests/data/medcattrainer_export.json", "rb") as f:
+        mctrainer_data = json.load(f)
+
+    return Dataset.from_medcattrainer(data=mctrainer_data)
 
 
 class TestAnnotation:
@@ -11,6 +20,27 @@ class TestAnnotation:
         ann = Annotation(text="test", start=0, end=5, label="test")
 
         assert ann.to_nervaluate() == {"start": 0, "end": 5, "label": "test"}
+
+    def test_annotation_lstrip(self):
+        ann = Annotation(text=" test", start=0, end=5, label="test")
+
+        ann.lstrip()
+
+        assert ann == Annotation(text="test", start=1, end=5, label="test")
+
+    def test_annotation_rstrip(self):
+        ann = Annotation(text="test,", start=0, end=5, label="test")
+
+        ann.rstrip()
+
+        assert ann == Annotation(text="test", start=0, end=4, label="test")
+
+    def test_annotation_strip(self):
+        ann = Annotation(text=" test,", start=0, end=6, label="test")
+
+        ann.strip()
+
+        assert ann == Annotation(text="test", start=1, end=5, label="test")
 
 
 class TestDocument:
@@ -123,3 +153,70 @@ class TestDataset:
             [{"start": 0, "end": 5, "label": "test1"}],
             [{"start": 0, "end": 5, "label": "test2"}],
         ]
+
+    def test_num_docs(self, dataset):
+        assert dataset.num_docs() == 2
+
+    def test_num_annotations(self, dataset):
+        assert dataset.num_annotations() == 4
+
+    def test_span_counts(self, dataset):
+        assert dataset.span_counts() == {"<< p3": 1, "<p3": 2, "anemie": 1}
+
+    def test_span_counts_n_spans(self, dataset):
+        assert dataset.span_counts(n_spans=1) == {"<p3": 2}
+
+    def test_span_counts_callback(self, dataset):
+        assert dataset.span_counts(span_callback=lambda x: x.upper()) == {
+            "<< P3": 1,
+            "<P3": 2,
+            "ANEMIE": 1,
+        }
+
+    def test_label_counts(self, dataset):
+        assert dataset.label_counts() == {
+            "C0002871_anemie": 1,
+            "C0015934_intrauterine_groeivertraging": 3,
+        }
+
+    def test_label_counts_n_labels(self, dataset):
+        assert dataset.label_counts(n_labels=1) == {
+            "C0015934_intrauterine_groeivertraging": 3
+        }
+
+    def test_label_counts_callback(self, dataset):
+        assert dataset.label_counts(label_callback=lambda x: x[x.index("_") + 1 :]) == {
+            "anemie": 1,
+            "intrauterine_groeivertraging": 3,
+        }
+
+    def test_qualifier_counts(self, dataset):
+        assert dataset.qualifier_counts() == {
+            "Experiencer": {"Patient": 4},
+            "Negation": {"Affirmed": 3, "Negated": 1},
+            "Plausibility": {"Plausible": 4},
+            "Temporality": {"Current": 4},
+        }
+
+    def test_stats(self, dataset):
+        stats = dataset.stats()
+
+        assert stats["num_docs"] == dataset.num_docs()
+        assert stats["num_annotations"] == dataset.num_annotations()
+        assert stats["span_counts"] == dataset.span_counts()
+        assert stats["label_counts"] == dataset.label_counts()
+        assert stats["qualifier_counts"] == dataset.qualifier_counts()
+
+    def test_stats_with_kwargs(self, dataset):
+        n_labels = 1
+        span_callback = lambda x: x.upper()  # noqa: E731
+
+        stats = dataset.stats(
+            n_labels=n_labels, span_callback=span_callback, unused_argument=None
+        )
+
+        assert stats["num_docs"] == dataset.num_docs()
+        assert stats["num_annotations"] == dataset.num_annotations()
+        assert stats["span_counts"] == dataset.span_counts(span_callback=span_callback)
+        assert stats["label_counts"] == dataset.label_counts(n_labels=n_labels)
+        assert stats["qualifier_counts"] == dataset.qualifier_counts()
