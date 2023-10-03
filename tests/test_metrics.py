@@ -86,10 +86,10 @@ class TestDataset:
         )
 
         assert dataset.docs[0].annotations[0].qualifiers == [
-            {"name": "Plausibility", "value": "Plausible"},
-            {"name": "Temporality", "value": "Current"},
-            {"name": "Negation", "value": "Negated"},
-            {"name": "Experiencer", "value": "Patient"},
+            {"name": "Plausibility", "value": "Plausible", "is_default": True},
+            {"name": "Temporality", "value": "Current", "is_default": True},
+            {"name": "Negation", "value": "Negated", "is_default": False},
+            {"name": "Experiencer", "value": "Patient", "is_default": True},
         ]
 
     def test_dataset_from_clinlp(self):
@@ -135,7 +135,13 @@ class TestDataset:
                             start=0,
                             end=5,
                             label="test1",
-                            qualifiers=[{"name": "Negation", "value": "Negated"}],
+                            qualifiers=[
+                                {
+                                    "name": "Negation",
+                                    "value": "Negated",
+                                    "is_default": False,
+                                }
+                            ],
                         ),
                     ],
                 ),
@@ -153,6 +159,27 @@ class TestDataset:
             [{"start": 0, "end": 5, "label": "test1"}],
             [{"start": 0, "end": 5, "label": "test2"}],
         ]
+
+    def test_infer_default_qualifiers(self, dataset):
+        assert dataset.infer_default_qualifiers() == {
+            "Negation": "Affirmed",
+            "Experiencer": "Patient",
+            "Temporality": "Current",
+            "Plausibility": "Plausible",
+        }
+
+    def test_set_default_qualifiers(self, dataset):
+        dataset.set_default_qualifiers(
+            {
+                "Negation": "Affirmed",
+                "Experiencer": "Patient",
+                "Temporality": "Current",
+                "Plausibility": "Plausible",
+            }
+        )
+
+        assert dataset.docs[0].annotations[0].qualifiers[0]["is_default"]
+        assert not dataset.docs[0].annotations[0].qualifiers[2]["is_default"]
 
     def test_num_docs(self, dataset):
         assert dataset.num_docs() == 2

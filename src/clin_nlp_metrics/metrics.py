@@ -104,6 +104,116 @@ class Dataset:
     ]
     """ The class methods to call when computing dataset stats """
 
+    def infer_default_qualifiers(self) -> dict:
+        """
+        Infer the default values for qualifiers, based on the majority class.
+
+        Returns
+        A dictionary with defaults, e.g. {"Negation": "Negated", "Experiencer":
+        "Patient"}.
+        -------
+        """
+
+        return {
+            name: max(counts, key=lambda item: counts[item])
+            for name, counts in self.qualifier_counts().items()
+        }
+
+    def set_default_qualifiers(self, default_qualifiers: dict[str, str]):
+        """
+        Sets the is_default property of all qualifiers in the dataset,
+        based on a dictionary that defines defaults.
+
+        Parameters
+        ----------
+        default_qualifiers: A dictionary of defaults, e.g. {"Negation": "Negated",
+        "Experiencer": "Patient"}.
+
+        """
+
+        for doc in self.docs:
+            for annotation in doc.annotations:
+                for qualifier in annotation.qualifiers:
+                    qualifier["is_default"] = (
+                        default_qualifiers[qualifier["name"]] == qualifier["value"]
+                    )
+
+    @staticmethod
+    def from_medcattrainer(
+        data: dict,
+        strip_spans: bool = True,
+        default_qualifiers: Optional[dict[str, str]] = None,
+    ) -> "Dataset":
+        """
+        Creates a new dataset from medcattrainer output, by converting downloaded json.
+
+        Parameters
+        ----------
+        data: The output from medcattrainer, as downloaded from the interface in
+        json format and provided as a dict.
+        strip_spans: Whether to remove punctuation and whitespaces from the beginning or
+        end of annotations. Used to clean up accidental over-annotations.
+        default_qualifiers: Optionally, the default qualifiers (which are not included
+        in the medcattrainer export), e.g. {"Negation": "Negated", "Experiencer":
+        "Patient"}. If None, will assume majority class is default.
+
+        Returns
+        -------
+        A Dataset, corresponding to the provided data that medcattrainer produced.
+
+        """
+
+        if len(data["projects"]) > 1:
+            raise ValueError(
+                "Cannot read MedCATTrainer exports with more than 1 project."
+            )
+
+        data = data["projects"][0]
+        docs = []
+
+        for doc in data["documents"]:
+            annotations = []
+
+            for annotation in doc["annotations"]:
+                if not annotation["deleted"]:
+                    qualifiers = []
+
+                    for qualifier in annotation["meta_anns"].values():
+                        qualifiers.append(
+                            {
+                                "name": qualifier["name"].title(),
+                                "value": qualifier["value"].title(),
+                            }
+                        )
+
+                    annotation = Annotation(
+                        text=annotation["value"],
+                        start=annotation["start"],
+                        end=annotation["end"],
+                        label=annotation["cui"],
+                        qualifiers=qualifiers,
+                    )
+
+                    if strip_spans:
+                        annotation.strip()
+
+                    annotations.append(annotation)
+
+            docs.append(
+                Document(
+                    identifier=doc["name"], text=doc["text"], annotations=annotations
+                )
+            )
+
+        dataset = Dataset(docs)
+
+        if default_qualifiers is None:
+            default_qualifiers = dataset.infer_default_qualifiers()
+
+        dataset.set_default_qualifiers(default_qualifiers)
+
+        return Dataset(docs)
+
     @staticmethod
     def from_clinlp_docs(
         nlp_docs: Iterable[spacy.language.Doc], ids: Optional[Iterable[str]] = None
@@ -154,68 +264,6 @@ class Dataset:
             docs.append(
                 Document(
                     identifier=str(identifier), text=doc.text, annotations=annotations
-                )
-            )
-
-        return Dataset(docs)
-
-    @staticmethod
-    def from_medcattrainer(data: dict, strip_spans: bool = True) -> "Dataset":
-        """
-        Creates a new dataset from medcattrainer output, by converting downloaded json.
-
-        Parameters
-        ----------
-        data: The output from medcattrainer, as downloaded from the interface in
-        json format and provided as a dict.
-        strip_spans: Whether to remove punctuation and whitespaces from the beginning or
-        end of annotations. Used to clean up accidental over-annotations.
-
-        Returns
-        -------
-        A Dataset, corresponding to the provided data that medcattrainer produced.
-
-        """
-
-        if len(data["projects"]) > 1:
-            raise ValueError(
-                "Cannot read MedCATTrainer exports with more than 1 project."
-            )
-
-        data = data["projects"][0]
-        docs = []
-
-        for doc in data["documents"]:
-            annotations = []
-
-            for annotation in doc["annotations"]:
-                if not annotation["deleted"]:
-                    qualifiers = []
-
-                    for qualifier in annotation["meta_anns"].values():
-                        qualifiers.append(
-                            {
-                                "name": qualifier["name"].title(),
-                                "value": qualifier["value"].title(),
-                            }
-                        )
-
-                    annotation = Annotation(
-                        text=annotation["value"],
-                        start=annotation["start"],
-                        end=annotation["end"],
-                        label=annotation["cui"],
-                        qualifiers=qualifiers,
-                    )
-
-                    if strip_spans:
-                        annotation.strip()
-
-                    annotations.append(annotation)
-
-            docs.append(
-                Document(
-                    identifier=doc["name"], text=doc["text"], annotations=annotations
                 )
             )
 
