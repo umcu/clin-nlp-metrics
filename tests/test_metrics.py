@@ -3,7 +3,7 @@ import pickle
 
 import clinlp  # noqa: F401
 
-from clin_nlp_metrics.metrics import Annotation, Dataset, Document
+from clin_nlp_metrics.dataset import Annotation, Dataset, Document
 
 
 class TestAnnotation:
