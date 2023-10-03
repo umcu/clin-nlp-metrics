@@ -1,3 +1,4 @@
+import inspect
 import itertools
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -254,7 +255,9 @@ class Dataset:
         return sum(len(doc.annotations) for doc in self.docs)
 
     def span_counts(
-        self, n_spans: Optional[int] = 25, span_callback: Optional[Callable] = None, **kwargs
+        self,
+        n_spans: Optional[int] = 25,
+        span_callback: Optional[Callable] = None,
     ) -> dict:
         """
         Counts the text spans of all annotations in this dataset.
@@ -282,7 +285,9 @@ class Dataset:
         return dict(cntr.most_common(n_spans))
 
     def label_counts(
-        self, n_labels: Optional[int] = 25, label_callback: Optional[Callable] = None, **kwargs
+        self,
+        n_labels: Optional[int] = 25,
+        label_callback: Optional[Callable] = None,
     ) -> dict:
         """
         Counts the annotation labels of all annotations in this dataset.
@@ -329,5 +334,28 @@ class Dataset:
 
         return {name: dict(counts) for name, counts in cntrs.items()}
 
-    def get_stats(self, **kwargs):
-        return {stat: getattr(self, stat)(**kwargs) for stat in self._ALL_STATS}
+    def stats(self, **kwargs) -> dict:
+        """
+        Compute all the stats of this dataset, as defined in the _ALL_STATS class variable.
+
+        Returns
+        -------
+        A dictionary mapping the name of the stat to the values.
+        E.g.: {'num_docs': 384, 'num_annotations': 4353, ...}
+        """
+
+        stats = {}
+
+        for stat in self._ALL_STATS:
+
+            stat_func = getattr(self, stat)
+
+            func_kwargs = {
+                k: kwargs[k]
+                for k in inspect.signature(stat_func).parameters
+                if k in kwargs
+            }
+
+            stats[stat] = stat_func(**func_kwargs)
+
+        return stats
