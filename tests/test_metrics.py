@@ -224,9 +224,8 @@ class TestDataset:
         ]
 
     def test_dataset_to_nervaluate_with_filter(self, dataset):
-        ann_filter = lambda ann: any(
-            not qualifier["is_default"] for qualifier in ann.qualifiers
-        )
+        def ann_filter(ann):
+            return any(not qualifier["is_default"] for qualifier in ann.qualifiers)
 
         to_nervaluate = dataset.to_nervaluate(ann_filter=ann_filter)
 
@@ -236,22 +235,14 @@ class TestDataset:
         ]
 
     def test_infer_default_qualifiers(self, dataset):
-        assert dataset.infer_default_qualifiers() == {
+        default_qualifiers = dataset.infer_default_qualifiers()
+
+        assert default_qualifiers == {
             "Negation": "Affirmed",
             "Experiencer": "Patient",
             "Temporality": "Current",
             "Plausibility": "Plausible",
         }
-
-    def test_set_default_qualifiers(self, dataset):
-        dataset.set_default_qualifiers(
-            {
-                "Negation": "Affirmed",
-                "Experiencer": "Patient",
-                "Temporality": "Current",
-                "Plausibility": "Plausible",
-            }
-        )
 
         assert dataset.docs[0].annotations[0].qualifiers[0]["is_default"]
         assert not dataset.docs[0].annotations[0].qualifiers[2]["is_default"]
