@@ -93,7 +93,7 @@ class Document:
     """ A list of annotations. """
 
     def to_nervaluate(
-        self, ann_filter: Optional[Callable[[Annotation], bool]]
+        self, ann_filter: Optional[Callable[[Annotation], bool]] = None
     ) -> list[dict]:
         """
         Converts to format that nervaluate ingests.
@@ -107,7 +107,9 @@ class Document:
 
         return [ann.to_nervaluate() for ann in self.annotations if ann_filter(ann)]
 
-    def labels(self, ann_filter: Optional[Callable[[Annotation], bool]]) -> set[str]:
+    def labels(
+        self, ann_filter: Optional[Callable[[Annotation], bool]] = None
+    ) -> set[str]:
         """
         Obtain all annotation labels for this document.
         Parameters
@@ -330,7 +332,9 @@ class Dataset:
 
         return Dataset(docs)
 
-    def to_nervaluate(self, ann_filter: Optional[Callable[[Annotation], bool]]) -> list[list[dict]]:
+    def to_nervaluate(
+        self, ann_filter: Optional[Callable[[Annotation], bool]] = None
+    ) -> list[list[dict]]:
         """
         Converts to format that nervaluate ingests.
 

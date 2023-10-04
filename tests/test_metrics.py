@@ -19,7 +19,12 @@ class TestAnnotation:
     def test_annotation_nervaluate(self):
         ann = Annotation(text="test", start=0, end=5, label="test")
 
-        assert ann.to_nervaluate() == {"start": 0, "end": 5, "label": "test"}
+        assert ann.to_nervaluate() == {
+            "text": "test",
+            "start": 0,
+            "end": 5,
+            "label": "test",
+        }
 
     def test_annotation_lstrip(self):
         ann = Annotation(text=" test", start=0, end=5, label="test")
@@ -42,6 +47,38 @@ class TestAnnotation:
 
         assert ann == Annotation(text="test", start=1, end=5, label="test")
 
+    def test_annotation_qualifier_names(self):
+        ann = Annotation(
+            text="test",
+            start=0,
+            end=4,
+            label="test",
+            qualifiers=[
+                {"name": "Negation", "value": "Affirmed"},
+                {"name": "Experiencer", "value": "Other"},
+            ],
+        )
+
+        qualifier_names = ann.qualifier_names
+
+        assert qualifier_names == {"Negation", "Experiencer"}
+
+    def test_annotation_get_qualifier_by_name(self):
+        ann = Annotation(
+            text="test",
+            start=0,
+            end=4,
+            label="test",
+            qualifiers=[
+                {"name": "Negation", "value": "Affirmed"},
+                {"name": "Experiencer", "value": "Other"},
+            ],
+        )
+
+        qualifier = ann.get_qualifier_by_name(qualifier_name="Experiencer")
+
+        assert qualifier == {"name": "Experiencer", "value": "Other"}
+
 
 class TestDocument:
     def test_document_nervaluate(self):
@@ -55,9 +92,35 @@ class TestDocument:
         )
 
         assert doc.to_nervaluate() == [
-            {"start": 0, "end": 5, "label": "test1"},
-            {"start": 10, "end": 15, "label": "test2"},
+            {"text": "test1", "start": 0, "end": 5, "label": "test1"},
+            {"text": "test2", "start": 10, "end": 15, "label": "test2"},
         ]
+
+    def test_document_labels(self):
+        doc = Document(
+            identifier="1",
+            text="test1 and test2",
+            annotations=[
+                Annotation(text="test1", start=0, end=5, label="test1"),
+                Annotation(text="test2", start=10, end=15, label="test2"),
+            ],
+        )
+
+        assert doc.labels() == {"test1", "test2"}
+
+    def test_document_labels_with_filter(self):
+        doc = Document(
+            identifier="1",
+            text="test1 and test2",
+            annotations=[
+                Annotation(text="test1", start=0, end=5, label="test1"),
+                Annotation(text="test2", start=10, end=15, label="test2"),
+            ],
+        )
+
+        labels = doc.labels(ann_filter=(lambda ann: ann.start > 5))
+
+        assert labels == {"test2"}
 
 
 class TestDataset:
@@ -156,8 +219,20 @@ class TestDataset:
         )
 
         assert dataset.to_nervaluate() == [
-            [{"start": 0, "end": 5, "label": "test1"}],
-            [{"start": 0, "end": 5, "label": "test2"}],
+            [{"text": "test1", "start": 0, "end": 5, "label": "test1"}],
+            [{"text": "test2", "start": 0, "end": 5, "label": "test2"}],
+        ]
+
+    def test_dataset_to_nervaluate_with_filter(self, dataset):
+        ann_filter = lambda ann: any(
+            not qualifier["is_default"] for qualifier in ann.qualifiers
+        )
+
+        to_nervaluate = dataset.to_nervaluate(ann_filter=ann_filter)
+
+        assert to_nervaluate == [
+            [{"end": 984, "label": "C0002871_anemie", "start": 978, "text": "anemie"}],
+            [],
         ]
 
     def test_infer_default_qualifiers(self, dataset):
