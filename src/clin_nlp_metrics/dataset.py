@@ -338,6 +338,12 @@ class Dataset:
         if default_qualifiers is None:
             default_qualifiers = dataset.infer_default_qualifiers()
 
+            logger.warning(
+                f"Dataset.from_medcattrainer inferred the following qualifier defaults "
+                f"from the majority classes: {default_qualifiers}. To change this "
+                f"behaviour, use the default_qualifiers keyword. "
+            )
+
         dataset.set_default_qualifiers(default_qualifiers)
 
         return Dataset(docs)
