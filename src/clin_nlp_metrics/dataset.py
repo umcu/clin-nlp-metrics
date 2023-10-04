@@ -60,7 +60,12 @@ class Annotation:
         -------
         A dictionary with the items nervaluate expects.
         """
-        return {"start": self.start, "end": self.end, "label": self.label}
+        return {
+            "text": self.text,
+            "start": self.start,
+            "end": self.end,
+            "label": self.label,
+        }
 
     @property
     def qualifier_names(self) -> set[str]:
