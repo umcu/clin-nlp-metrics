@@ -1,9 +1,10 @@
 from collections import defaultdict
+from typing import Callable, Optional
 
 from nervaluate import Evaluator
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-from clin_nlp_metrics.dataset import Dataset
+from clin_nlp_metrics.dataset import Annotation, Dataset
 
 
 class Metrics:
@@ -17,9 +18,9 @@ class Metrics:
         self.true = true
         self.pred = pred
 
-        self._validate()
+        self._validate_self()
 
-    def _validate(self):
+    def _validate_self(self):
         if self.true.num_docs() != self.pred.num_docs():
             raise ValueError("Can only compute metrics for Datasets with same size")
 
@@ -32,44 +33,86 @@ class Metrics:
                     f"in the same order."
                 )
 
-    def entities(self, classes=False) -> dict:
-        true = self.true.to_nervaluate()
-        pred = self.pred.to_nervaluate()
+    def entity_metrics(
+        self,
+        ann_filter: Optional[Callable[[Annotation], bool]] = None,
+        classes: bool = False,
+    ) -> dict:
+        """
+        Compute metrics for entities, including precision, recall and f1-score.
+        Returns all measures for exact, strict, partial, and type matching, based on
+        the nervaluate libary (for more information, see:
+        https://github.com/MantisAI/nervaluate)
 
-        labels = self.true.labels.union(self.pred.labels)
+        Parameters
+        ----------
+        ann_filter: An optional filter to apply to annotations, e.g. including
+        only annotations with a certain label or qualifier. Annotations are only
+        included if ann_filter evaluates to True.
+        classes: Will return metrics per class when set to True, or micro-averaged over
+        all classes when set to False.
 
-        evaluator = Evaluator(true=true, pred=pred, tags=labels)
-        results, full_results = evaluator.evaluate()
+        Returns
+        -------
+        A dictionary containing the relevant metrics.
 
-        if classes:
-            return full_results
-        else:
-            return results
+        """
+
+        ann_filter = ann_filter or (lambda ann: True)
+
+        true_anns = self.true.to_nervaluate(ann_filter)
+        pred_anns = self.pred.to_nervaluate(ann_filter)
+
+        labels = list(
+            set.union(
+                *[doc.labels(ann_filter) for doc in self.true.docs + self.pred.docs]
+            )
+        )
+
+        evaluator = Evaluator(
+            true=true_anns, pred=pred_anns, tags=labels, track_ents=True
+        )
+
+        results, class_results = evaluator.evaluate()
+
+        return class_results if classes else results
 
     @classmethod
-    def _compute_metrics(cls, qualifier_values: dict[str, dict[str, list]]):
-        metrics = {}
+    def _compute_qualifier_metrics(cls, qualifier_values: dict[str, dict[str, list]]):
+        """
+        Computes the qualifier metrics based on aggregated list of qualifier values.
+        Parameters
+        ----------
+        qualifier_values:
 
-        _DEFAULTS = {
-            "Negation": "Negated",
-            "Temporality": "Historical",
-            "Experiencer": "Other",
-            "Plausibility": "Hypothetical",
+        Returns
+        -------
+
+        """
+
+    def _aggregate_qualifier_values(self) -> dict[str, dict[str, list]]:
+        """
+        Aggregates all Annotation qualifier values for metric computation. Matches
+        Annotations from true docs to an Annotation from pred docs  with the same span,
+        but not necessarily the same label.
+
+        Returns
+        -------
+        For each qualifier, the true values, predicted values, and misses aggregated
+        in lists, e.g.:
+        {
+            "Negation": {
+                "true": ["Affirmed", "Negated", "Affirmed"],
+                "pred": ["Affirmed", "Negated", "Negated"],
+                "misses": [
+                    {"doc.identifier": 1, annotation: {"start": 0, "end": 5, "text":
+                    "test"}, true_label: "Affirmed", pred_label: "Negated"}, ...]
+            },
+            ...
         }
+        """
 
-        for name, values in qualifier_values.items():
-            metrics[name] = {'n': len(values["true"])}
-
-            for metric_name, metric in cls._QUALIFIER_METRICS.items():
-                metrics[name][metric_name] = metric(
-                    values["true"], values["pred"], pos_label=_DEFAULTS[name]
-                )
-
-        return metrics
-
-    def qualifiers(self) -> dict:
-        qualifier_values = defaultdict(lambda: defaultdict(list))
-        misses = defaultdict(list)
+        aggregation = defaultdict(lambda: defaultdict(list))
 
         for true_doc, pred_doc in zip(self.true.docs, self.pred.docs):
             for true_annotation in true_doc.annotations:
@@ -88,22 +131,59 @@ class Metrics:
                     true_val = true_annotation.get_qualifier_by_name(name)["value"]
                     pred_val = pred_annotation.get_qualifier_by_name(name)["value"]
 
-                    qualifier_values[name]["true"].append(true_val)
-                    qualifier_values[name]["pred"].append(pred_val)
+                    aggregation[name]["true"].append(true_val)
+                    aggregation[name]["pred"].append(pred_val)
 
                     if true_val != pred_val:
-                        misses[name].append(
+                        aggregation[name]["misses"].append(
                             {
                                 "doc.identifier": true_doc.identifier,
-                                "annotation": {
-                                    "text": true_annotation.text,
-                                    "start": true_annotation.start,
-                                    "end": true_annotation.end,
-                                },
-                                "qualifier": name,
+                                "annotation": true_annotation.to_nervaluate(),
                                 "true_qualifier": true_val,
                                 "pred_qualifier": pred_val,
                             }
                         )
 
-        return {"metrics": self._compute_metrics(qualifier_values), "misses": misses}
+        return aggregation
+
+    def qualifier_metrics(self) -> dict:
+        """
+        Computes metrics for qualifiers, including precision, recall and f1-score.
+        Only computes metrics for combinations of annotations with the same start
+        and end char, but regardless of whether the labels match.
+
+        Returns
+        -------
+        A dictionary with metrics for each qualifier.
+        """
+
+        aggregation = self._aggregate_qualifier_values()
+
+        result = {}
+
+        for name, values in aggregation.items():
+            true_unique_values = set(values["true"])
+            pred_unique_values = set(values["pred"])
+
+            if max(len(true_unique_values), len(pred_unique_values)) > 2:
+                raise ValueError("Can oly compute metrics for binary qualifier values")
+
+            pos_label = next(
+                val
+                for val in true_unique_values
+                if val != self.true.default_qualifiers[name]
+            )
+
+            result[name] = {
+                "metrics": {
+                    "n": len(values["true"]),
+                },
+                "misses": values["misses"],
+            }
+
+            for metric_name, metric in self._QUALIFIER_METRICS.items():
+                result[name]["metrics"][metric_name] = metric(
+                    values["true"], values["pred"], pos_label=pos_label
+                )
+
+        return result
