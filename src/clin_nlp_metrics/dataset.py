@@ -1,10 +1,20 @@
 import inspect
 import itertools
+import logging
+import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from typing import Callable, Iterable, Optional
 
 import spacy
+
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+
+handler = logging.StreamHandler(sys.stderr)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 @dataclass
