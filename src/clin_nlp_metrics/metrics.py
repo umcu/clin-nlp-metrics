@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Callable, Optional
 
-from nervaluate import Evaluator
+import nervaluate
 from sklearn.metrics import f1_score, precision_score, recall_score
 
 from clin_nlp_metrics.dataset import Annotation, Dataset
@@ -69,7 +69,7 @@ class Metrics:
             )
         )
 
-        evaluator = Evaluator(
+        evaluator = nervaluate.Evaluator(
             true=true_anns, pred=pred_anns, tags=labels, track_ents=True
         )
 
@@ -77,29 +77,18 @@ class Metrics:
 
         return class_results if classes else results
 
-    @classmethod
-    def _compute_qualifier_metrics(cls, qualifier_values: dict[str, dict[str, list]]):
-        """
-        Computes the qualifier metrics based on aggregated list of qualifier values.
-        Parameters
-        ----------
-        qualifier_values:
-
-        Returns
-        -------
-
-        """
-
     def _aggregate_qualifier_values(self) -> dict[str, dict[str, list]]:
         """
         Aggregates all Annotation qualifier values for metric computation. Matches
-        Annotations from true docs to an Annotation from pred docs  with the same span,
-        but not necessarily the same label.
+        Annotations from true docs to an Annotation from pred docs with equal span,
+        but not necessarily the same label. Only aggregates qualifiers that are present
+        in both Annotations.
 
         Returns
         -------
         For each qualifier, the true values, predicted values, and misses aggregated
-        in lists, e.g.:
+        into lists, e.g.:
+
         {
             "Negation": {
                 "true": ["Affirmed", "Negated", "Affirmed"],
@@ -181,8 +170,8 @@ class Metrics:
                 "misses": values["misses"],
             }
 
-            for metric_name, metric in self._QUALIFIER_METRICS.items():
-                result[name]["metrics"][metric_name] = metric(
+            for metric_name, metric_func in self._QUALIFIER_METRICS.items():
+                result[name]["metrics"][metric_name] = metric_func(
                     values["true"], values["pred"], pos_label=pos_label
                 )
 
