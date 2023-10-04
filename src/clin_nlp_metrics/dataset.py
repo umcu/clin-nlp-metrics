@@ -3,7 +3,7 @@ import itertools
 import logging
 import sys
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Iterable, Optional
 
 import spacy
@@ -12,7 +12,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 handler = logging.StreamHandler(sys.stderr)
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
@@ -35,7 +35,7 @@ class Annotation:
     label: str
     """ The label/tag"""
 
-    qualifiers: Optional[list[dict]] = None
+    qualifiers: list[dict] = field(default_factory=lambda: list())
     """ Optionally, a list of qualifiers"""
 
     def lstrip(self, chars=" ,"):
@@ -168,6 +168,23 @@ class Dataset:
     docs: list[Document]
     """ The annotated documents. """
 
+    default_qualifiers: dict[str, str] = None
+    """ Mapping of qualifiers to their default value, e.g. {"Negation": "Affirmed"}"""
+
+    def __post_init__(self):
+        self.default_qualifiers = {}
+
+        try:
+            for doc in self.docs:
+                for annotation in doc.annotations:
+                    for qualifier in annotation.qualifiers:
+                        if qualifier["is_default"]:
+                            self.default_qualifiers[qualifier["name"]] = qualifier[
+                                "value"
+                            ]
+        except KeyError:
+            self.default_qualifiers = self.infer_default_qualifiers()
+
     _ALL_STATS = [
         "num_docs",
         "num_annotations",
@@ -230,11 +247,12 @@ class Dataset:
                 )
             )
 
-        return Dataset(docs)
+        return Dataset(docs=docs)
 
     def infer_default_qualifiers(self) -> dict:
         """
-        Infer the default values for qualifiers, based on the majority class.
+        Infer the default values for qualifiers, based on the majority class, and
+        set this value on all annotations.
 
         Returns
         A dictionary with defaults, e.g. {"Negation": "Negated", "Experiencer":
@@ -242,22 +260,15 @@ class Dataset:
         -------
         """
 
-        return {
+        default_qualifiers = {
             name: max(counts, key=lambda item: counts[item])
             for name, counts in self.qualifier_counts().items()
         }
 
-    def set_default_qualifiers(self, default_qualifiers: dict[str, str]):
-        """
-        Sets the is_default property of all qualifiers in the dataset,
-        based on a dictionary that defines defaults.
-
-        Parameters
-        ----------
-        default_qualifiers: A dictionary of defaults, e.g. {"Negation": "Negated",
-        "Experiencer": "Patient"}.
-
-        """
+        logger.warning(
+            f"Inferred the following qualifier defaults from the majority "
+            f"classes: {default_qualifiers}. "
+        )
 
         for doc in self.docs:
             for annotation in doc.annotations:
@@ -265,6 +276,8 @@ class Dataset:
                     qualifier["is_default"] = (
                         default_qualifiers[qualifier["name"]] == qualifier["value"]
                     )
+
+        return default_qualifiers
 
     @staticmethod
     def from_medcattrainer(
@@ -307,12 +320,18 @@ class Dataset:
                     qualifiers = []
 
                     for qualifier in annotation["meta_anns"].values():
-                        qualifiers.append(
-                            {
-                                "name": qualifier["name"].title(),
-                                "value": qualifier["value"].title(),
-                            }
-                        )
+                        qualifier = {
+                            "name": qualifier["name"].title(),
+                            "value": qualifier["value"].title(),
+                        }
+
+                        if default_qualifiers is not None:
+                            qualifier["is_default"] = (
+                                default_qualifiers[qualifier["name"]]
+                                == qualifier["value"]
+                            )
+
+                        qualifiers.append(qualifier)
 
                     annotation = Annotation(
                         text=annotation["value"],
@@ -332,19 +351,6 @@ class Dataset:
                     identifier=doc["name"], text=doc["text"], annotations=annotations
                 )
             )
-
-        dataset = Dataset(docs)
-
-        if default_qualifiers is None:
-            default_qualifiers = dataset.infer_default_qualifiers()
-
-            logger.warning(
-                f"Dataset.from_medcattrainer inferred the following qualifier defaults "
-                f"from the majority classes: {default_qualifiers}. To change this "
-                f"behaviour, use the default_qualifiers keyword. "
-            )
-
-        dataset.set_default_qualifiers(default_qualifiers)
 
         return Dataset(docs)
 
