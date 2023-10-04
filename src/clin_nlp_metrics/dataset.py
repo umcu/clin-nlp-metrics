@@ -92,16 +92,28 @@ class Document:
     annotations: list[Annotation]
     """ A list of annotations. """
 
-    def to_nervaluate(self) -> list[dict]:
+    def to_nervaluate(
+        self, ann_filter: Optional[Callable[[Annotation], bool]]
+    ) -> list[dict]:
         """
         Converts to format that nervaluate ingests.
 
         Returns
         -------
         A list of dictionaries corresponding to annotations.
-
         """
-        return [ann.to_nervaluate() for ann in self.annotations]
+
+        ann_filter = ann_filter or (lambda ann: True)
+
+        return [ann.to_nervaluate() for ann in self.annotations if ann_filter(ann)]
+
+    def labels(self, ann_filter: Optional[Callable[[Annotation], bool]]) -> set[str]:
+        """
+        Obtain all annotation labels for this document.
+        Parameters
+        ----------
+        ann_filter: A filter to apply to annotations, should map to annotations to True
+        if they should be included, False otherwise.
 
     @property
     def labels(self) -> set[str]:
@@ -300,7 +312,7 @@ class Dataset:
 
         return Dataset(docs)
 
-    def to_nervaluate(self) -> list[list[dict]]:
+    def to_nervaluate(self, ann_filter: Optional[Callable[[Annotation], bool]]) -> list[list[dict]]:
         """
         Converts to format that nervaluate ingests.
 
@@ -309,7 +321,9 @@ class Dataset:
         A nested list of dictionaries corresponding to annotations.
         """
 
-        return [doc.to_nervaluate() for doc in self.docs]
+        ann_filter = ann_filter or (lambda ann: True)
+
+        return [doc.to_nervaluate(ann_filter) for doc in self.docs]
 
     def num_docs(self) -> int:
         """
