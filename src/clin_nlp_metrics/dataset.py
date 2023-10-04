@@ -115,11 +115,33 @@ class Document:
         ann_filter: A filter to apply to annotations, should map to annotations to True
         if they should be included, False otherwise.
 
-    @property
-    def labels(self) -> set[str]:
-        return {annotation.label for annotation in self.annotations}
+        Returns
+        -------
+        A set containing all annotation labels for this document.
+        """
+        ann_filter = ann_filter or (lambda ann: True)
 
-    def get_annotation_from_span(self, start, end) -> Optional[Annotation]:
+        return {
+            annotation.label
+            for annotation in self.annotations
+            if ann_filter(annotation)
+        }
+
+    def get_annotation_from_span(self, start: int, end: int) -> Optional[Annotation]:
+        """
+        Get annotation that exactly matches start and end char.
+
+        Parameters
+        ----------
+        start: The start char.
+        end: The end char.
+
+        Returns
+        -------
+        The Annotation with the provided start and end char, of None if no such
+        Annotation exists.
+        """
+
         for annotation in self.annotations:
             if (annotation.start == start) and (annotation.end == end):
                 return annotation
@@ -142,10 +164,6 @@ class Dataset:
         "qualifier_counts",
     ]
     """ The class methods to call when computing dataset stats """
-
-    @property
-    def labels(self) -> set[dict]:
-        return set.union(*[doc.labels for doc in self.docs])
 
     @staticmethod
     def from_clinlp_docs(
