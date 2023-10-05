@@ -13,6 +13,7 @@ _QUALIFIER_METRICS = {
     "f1": f1_score,
 }
 
+
 class Metrics:
     """
     Use this class to implement metrics comparing datasets.
