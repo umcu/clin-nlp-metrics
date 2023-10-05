@@ -186,7 +186,7 @@ class Metrics:
                 "misses": values["misses"],
             }
 
-            for metric_name, metric_func in self._QUALIFIER_METRICS.items():
+            for metric_name, metric_func in _QUALIFIER_METRICS.items():
                 result[name]["metrics"][metric_name] = metric_func(
                     values["true"], values["pred"], pos_label=pos_label
                 )
