@@ -79,9 +79,29 @@ class Annotation:
 
     @property
     def qualifier_names(self) -> set[str]:
+        """
+        Obtain unique qualifier names for this annotation.
+
+        Returns
+        -------
+        A set of unique qualifier names, e.g. {"Negation", "Experiencer"}.
+        """
         return {qualifier["name"] for qualifier in self.qualifiers}
 
     def get_qualifier_by_name(self, qualifier_name: str) -> dict:
+        """
+        Get a qualifier from the set of qualifiers by its name, or raise an error
+        when this qualifier is not present.
+
+        Parameters
+        ----------
+        qualifier_name: The name of the qualifier, e.g. Negation
+
+        Returns
+        -------
+        The entire qualifier, e.g. {"name": "Negation", "value": "Affirmed", ...}
+
+        """
         for qualifier in self.qualifiers:
             if qualifier["name"] == qualifier_name:
                 return qualifier
@@ -108,6 +128,11 @@ class Document:
         """
         Converts to format that nervaluate ingests.
 
+        Parameters
+        ----------
+        ann_filter: A filter to apply to annotations, should map to annotations to True
+        if they should be included, False otherwise.
+
         Returns
         -------
         A list of dictionaries corresponding to annotations.
@@ -122,6 +147,7 @@ class Document:
     ) -> set[str]:
         """
         Obtain all annotation labels for this document.
+
         Parameters
         ----------
         ann_filter: A filter to apply to annotations, should map to annotations to True
@@ -172,6 +198,12 @@ class Dataset:
     """ Mapping of qualifiers to their default value, e.g. {"Negation": "Affirmed"}"""
 
     def __post_init__(self):
+        """
+        Responsible for setting the default qualifiers by checking the default
+        qualifiers set on Annotations, if set, or inferring them from the majority
+        class otherwise.
+        """
+
         self.default_qualifiers = {}
 
         try:
@@ -192,7 +224,7 @@ class Dataset:
         "label_counts",
         "qualifier_counts",
     ]
-    """ The class methods to call when computing dataset stats """
+    """ All methods to call when computing full dataset stats """
 
     @staticmethod
     def from_clinlp_docs(
@@ -359,6 +391,11 @@ class Dataset:
     ) -> list[list[dict]]:
         """
         Converts to format that nervaluate ingests.
+
+        Parameters
+        ----------
+        ann_filter: A filter to apply to annotations, should map to annotations to True
+        if they should be included, False otherwise.
 
         Returns
         -------

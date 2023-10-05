@@ -6,21 +6,37 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 from clin_nlp_metrics.dataset import Annotation, Dataset
 
+""" Compute these metrics for qualifiers. """
+_QUALIFIER_METRICS = {
+    "precision": precision_score,
+    "recall": recall_score,
+    "f1": f1_score,
+}
 
 class Metrics:
-    _QUALIFIER_METRICS = {
-        "precision": precision_score,
-        "recall": recall_score,
-        "f1": f1_score,
-    }
+    """
+    Use this class to implement metrics comparing datasets.
+    """
 
     def __init__(self, true: Dataset, pred: Dataset):
+        """
+        Initialize metrics.
+
+        Parameters
+        ----------
+        true: The dataset containing true (annotated/gold standard) annotations.
+        pred: The dataset containing pred (predicted/inferred) annotations.
+        """
         self.true = true
         self.pred = pred
 
         self._validate_self()
 
     def _validate_self(self):
+        """
+        Validate the two datasets. Will raise an ValueError when datasets don't contain
+        the same documents.
+        """
         if self.true.num_docs() != self.pred.num_docs():
             raise ValueError("Can only compute metrics for Datasets with same size")
 
