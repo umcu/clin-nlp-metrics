@@ -86,9 +86,7 @@ class Metrics:
             )
         )
 
-        evaluator = nervaluate.Evaluator(
-            true=true_anns, pred=pred_anns, tags=labels, track_ents=True
-        )
+        evaluator = nervaluate.Evaluator(true=true_anns, pred=pred_anns, tags=labels)
 
         results, class_results = evaluator.evaluate()
 
