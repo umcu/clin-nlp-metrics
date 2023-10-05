@@ -8,11 +8,20 @@ from clin_nlp_metrics.dataset import Annotation, Dataset, Document
 
 
 @pytest.fixture
-def dataset():
+def mctrainer_data():
     with open("tests/data/medcattrainer_export.json", "rb") as f:
-        mctrainer_data = json.load(f)
+        return json.load(f)
 
+
+@pytest.fixture
+def dataset(mctrainer_data):
     return Dataset.from_medcattrainer(data=mctrainer_data)
+
+
+@pytest.fixture
+def clinlp_docs():
+    with open("tests/data/clinlp_docs.pickle", "rb") as f:
+        return pickle.load(f)
 
 
 class TestAnnotation:
@@ -124,58 +133,69 @@ class TestDocument:
 
 
 class TestDataset:
-    def test_dataset_from_medcattrainer(self):
-        with open("tests/data/medcattrainer_export.json", "rb") as f:
-            mctrainer_data = json.load(f)
-
+    def test_dataset_from_medcattrainer_docs(self, mctrainer_data):
         dataset = Dataset.from_medcattrainer(data=mctrainer_data)
 
-        assert len(dataset.docs) == 2
-        assert dataset.docs[0].text == "random text sample"
-        assert len(dataset.docs[0].annotations) == 1
-        assert len(dataset.docs[1].annotations) == 3
-
-        assert dataset.docs[0].annotations[0].text == "anemie"
-        assert dataset.docs[0].annotations[0].start == 978
-        assert dataset.docs[0].annotations[0].end == 984
-        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
-
-        assert dataset.docs[1].annotations[0].text == "<< p3"
-        assert dataset.docs[1].annotations[0].start == 1739
-        assert dataset.docs[1].annotations[0].end == 1744
-        assert (
-            dataset.docs[1].annotations[0].label
-            == "C0015934_intrauterine_groeivertraging"
-        )
-
-        assert dataset.docs[0].annotations[0].qualifiers == [
-            {"name": "Plausibility", "value": "Plausible", "is_default": True},
-            {"name": "Temporality", "value": "Current", "is_default": True},
-            {"name": "Negation", "value": "Negated", "is_default": False},
-            {"name": "Experiencer", "value": "Patient", "is_default": True},
-        ]
-
-    def test_dataset_from_clinlp(self):
-        with open("tests/data/clinlp_docs.pickle", "rb") as f:
-            clinlp_docs = pickle.load(f)
-
-        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
-
-        assert len(dataset.docs) == 3
+        assert len(dataset.docs) == 14
         assert dataset.docs[0].text == "patient had geen anemie"
         assert len(dataset.docs[0].annotations) == 1
-        assert len(dataset.docs[1].annotations) == 2
-        assert len(dataset.docs[2].annotations) == 1
+        assert dataset.docs[3].text == "patient had een prematuur adempatroon"
+        assert len(dataset.docs[3].annotations) == 0
+        assert (
+            dataset.docs[6].text == "na fototherapie verminderde hyperbillirubinaemie"
+        )
+        assert len(dataset.docs[6].annotations) == 2
+
+    def test_dataset_from_medcattrainer_annotations(self, mctrainer_data):
+        dataset = Dataset.from_medcattrainer(data=mctrainer_data)
 
         assert dataset.docs[0].annotations[0].text == "anemie"
         assert dataset.docs[0].annotations[0].start == 17
         assert dataset.docs[0].annotations[0].end == 23
         assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
 
-        assert dataset.docs[1].annotations[0].text == "prematuriteit"
-        assert dataset.docs[1].annotations[0].start == 18
-        assert dataset.docs[1].annotations[0].end == 31
-        assert dataset.docs[1].annotations[0].label == "C0151526_prematuriteit"
+        assert dataset.docs[6].annotations[1].text == "hyperbillirubinaemie"
+        assert dataset.docs[6].annotations[1].start == 28
+        assert dataset.docs[6].annotations[1].end == 48
+        assert dataset.docs[6].annotations[1].label == "C0020433_hyperbilirubinemie"
+
+    def test_dataset_from_medcatrainer_qualifiers(self, mctrainer_data):
+        dataset = Dataset.from_medcattrainer(data=mctrainer_data)
+
+        assert dataset.docs[0].annotations[0].qualifiers == [
+            {"name": "Temporality", "value": "Current", "is_default": True},
+            {"name": "Plausibility", "value": "Plausible", "is_default": True},
+            {"name": "Experiencer", "value": "Patient", "is_default": True},
+            {"name": "Negation", "value": "Negated", "is_default": False},
+        ]
+
+    def test_dataset_from_clinlp_docs(self, clinlp_docs):
+        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+
+        assert len(dataset.docs) == 14
+        assert dataset.docs[0].text == "patient had geen anemie"
+        assert len(dataset.docs[0].annotations) == 1
+        assert dataset.docs[3].text == "patient had een prematuur adempatroon"
+        assert len(dataset.docs[3].annotations) == 1
+        assert (
+            dataset.docs[6].text == "na fototherapie verminderde hyperbillirubinaemie"
+        )
+        assert len(dataset.docs[6].annotations) == 2
+
+    def test_dataset_from_clinlp_annotations(self, clinlp_docs):
+        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+
+        assert dataset.docs[0].annotations[0].text == "anemie"
+        assert dataset.docs[0].annotations[0].start == 17
+        assert dataset.docs[0].annotations[0].end == 23
+        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
+        assert dataset.docs[6].annotations[1].text == "hyperbillirubinaemie"
+        assert dataset.docs[6].annotations[1].start == 28
+        assert dataset.docs[6].annotations[1].end == 48
+        assert dataset.docs[6].annotations[1].label == "C0020433_hyperbilirubinemie"
+
+    def test_dataset_from_clinlp_qualifiers(self, clinlp_docs):
+        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
 
         assert sorted(
             dataset.docs[0].annotations[0].qualifiers, key=lambda q: q["name"]
@@ -229,10 +249,10 @@ class TestDataset:
 
         to_nervaluate = dataset.to_nervaluate(ann_filter=ann_filter)
 
-        assert to_nervaluate == [
-            [{"end": 984, "label": "C0002871_anemie", "start": 978, "text": "anemie"}],
-            [],
+        assert to_nervaluate[0] == [
+            {"end": 23, "label": "C0002871_anemie", "start": 17, "text": "anemie"}
         ]
+        assert to_nervaluate[1] == []
 
     def test_infer_default_qualifiers(self, dataset):
         default_qualifiers = dataset.infer_default_qualifiers()
@@ -244,51 +264,50 @@ class TestDataset:
             "Plausibility": "Plausible",
         }
 
-        assert dataset.docs[0].annotations[0].qualifiers[0]["is_default"]
-        assert not dataset.docs[0].annotations[0].qualifiers[2]["is_default"]
-
     def test_num_docs(self, dataset):
-        assert dataset.num_docs() == 2
+        assert dataset.num_docs() == 14
 
     def test_num_annotations(self, dataset):
-        assert dataset.num_annotations() == 4
+        assert dataset.num_annotations() == 13
 
     def test_span_counts(self, dataset):
-        assert dataset.span_counts() == {"<< p3": 1, "<p3": 2, "anemie": 1}
+        assert len(dataset.span_counts()) == 11
 
     def test_span_counts_n_spans(self, dataset):
-        assert dataset.span_counts(n_spans=1) == {"<p3": 2}
+        assert dataset.span_counts(n_spans=3) == {
+            "anemie": 2,
+            "bloeding": 2,
+            "prematuriteit": 1,
+        }
 
     def test_span_counts_callback(self, dataset):
-        assert dataset.span_counts(span_callback=lambda x: x.upper()) == {
-            "<< P3": 1,
-            "<P3": 2,
-            "ANEMIE": 1,
+        assert dataset.span_counts(n_spans=3, span_callback=lambda x: x.upper()) == {
+            "ANEMIE": 2,
+            "BLOEDING": 2,
+            "PREMATURITEIT": 1,
         }
 
     def test_label_counts(self, dataset):
-        assert dataset.label_counts() == {
-            "C0002871_anemie": 1,
-            "C0015934_intrauterine_groeivertraging": 3,
-        }
+        assert len(dataset.label_counts()) == 9
 
     def test_label_counts_n_labels(self, dataset):
-        assert dataset.label_counts(n_labels=1) == {
-            "C0015934_intrauterine_groeivertraging": 3
+        assert dataset.label_counts(n_labels=3) == {
+            "C0002871_anemie": 2,
+            "C0151526_prematuriteit": 2,
+            "C0270191_intraventriculaire_bloeding": 2,
         }
 
     def test_label_counts_callback(self, dataset):
-        assert dataset.label_counts(label_callback=lambda x: x[x.index("_") + 1 :]) == {
-            "anemie": 1,
-            "intrauterine_groeivertraging": 3,
-        }
+        assert dataset.label_counts(
+            n_labels=3, label_callback=lambda x: x[x.index("_") + 1 :]
+        ) == {"anemie": 2, "prematuriteit": 2, "intraventriculaire_bloeding": 2}
 
     def test_qualifier_counts(self, dataset):
         assert dataset.qualifier_counts() == {
-            "Experiencer": {"Patient": 4},
-            "Negation": {"Affirmed": 3, "Negated": 1},
-            "Plausibility": {"Plausible": 4},
-            "Temporality": {"Current": 4},
+            "Experiencer": {"Patient": 12, "Other": 1},
+            "Negation": {"Affirmed": 11, "Negated": 2},
+            "Plausibility": {"Plausible": 11, "Hypothetical": 2},
+            "Temporality": {"Current": 11, "Historical": 2},
         }
 
     def test_stats(self, dataset):
