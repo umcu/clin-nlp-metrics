@@ -185,8 +185,9 @@ class Metrics:
             result[name] = {
                 "metrics": {
                     "n": len(values["true"]),
+                    "n_pos_true": sum(1 for v in values["true"] if v == pos_label),
+                    "n_pos_pred": sum(1 for v in values["pred"] if v == pos_label),
                 },
-                "misses": values["misses"],
             }
 
             if misses:

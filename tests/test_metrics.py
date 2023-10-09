@@ -69,24 +69,32 @@ class TestMetrics:
 
         assert metrics["Negation"]["metrics"] == {
             "n": 10,
+            "n_pos_pred": 2,
+            "n_pos_true": 2,
             "precision": 1.0,
             "recall": 1.0,
             "f1": 1.0,
         }
         assert metrics["Experiencer"]["metrics"] == {
             "n": 10,
+            "n_pos_pred": 1,
+            "n_pos_true": 1,
             "precision": 1.0,
             "recall": 1.0,
             "f1": 1.0,
         }
         assert metrics["Plausibility"]["metrics"] == {
             "n": 10,
+            "n_pos_pred": 2,
+            "n_pos_true": 2,
             "precision": 0.5,
             "recall": 0.5,
             "f1": 0.5,
         }
         assert metrics["Temporality"]["metrics"] == {
             "n": 10,
+            "n_pos_pred": 1,
+            "n_pos_true": 2,
             "precision": 1.0,
             "recall": 0.5,
             "f1": 0.6666666666666666,
