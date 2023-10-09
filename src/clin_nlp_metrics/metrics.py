@@ -150,11 +150,15 @@ class Metrics:
 
         return aggregation
 
-    def qualifier_metrics(self) -> dict:
+    def qualifier_metrics(self, misses=True) -> dict:
         """
         Computes metrics for qualifiers, including precision, recall and f1-score.
         Only computes metrics for combinations of annotations with the same start
         and end char, but regardless of whether the labels match.
+
+        Parameters
+        ----------
+        misses: Whether to include all misses (false positive/negatives) in the results.
 
         Returns
         -------
@@ -184,6 +188,9 @@ class Metrics:
                 },
                 "misses": values["misses"],
             }
+
+            if misses:
+                result[name]["misses"] = values["misses"]
 
             for metric_name, metric_func in _QUALIFIER_METRICS.items():
                 result[name]["metrics"][metric_name] = metric_func(
