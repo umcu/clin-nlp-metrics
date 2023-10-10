@@ -1,27 +1,6 @@
-import json
-import pickle
-
 import pytest
 
-from clin_nlp_metrics import Dataset, Metrics
-
-
-@pytest.fixture
-def mctrainer_dataset():
-    with open("tests/data/medcattrainer_export.json", "rb") as f:
-        mctrainer_data = json.load(f)
-
-    return Dataset.from_medcattrainer(data=mctrainer_data)
-
-
-@pytest.fixture
-def clinlp_dataset():
-    with open("tests/data/clinlp_docs.pickle", "rb") as f:
-        data = pickle.load(f)
-
-    ids = list(f"doc_{x}" for x in range(0, 15))
-
-    return Dataset.from_clinlp_docs(nlp_docs=data, ids=ids)
+from clin_nlp_metrics import Metrics
 
 
 class TestMetrics:
