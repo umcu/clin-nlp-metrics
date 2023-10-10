@@ -44,10 +44,10 @@ class Metrics:
         for true_doc, pred_doc in zip(self.true.docs, self.pred.docs):
             if true_doc.identifier != pred_doc.identifier:
                 raise ValueError(
-                    f"Found two documents with non-matching ids "
+                    "Found two documents with non-matching ids "
                     f"(true={true_doc.identifier}, pred={pred_doc.identifier}). "
-                    f"Please make sure to present the same documents, "
-                    f"in the same order."
+                    "Please make sure to present the same documents, "
+                    "in the same order."
                 )
 
     def entity_metrics(
