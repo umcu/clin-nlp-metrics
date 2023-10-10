@@ -150,7 +150,7 @@ class Metrics:
 
         return aggregation
 
-    def qualifier_metrics(self, misses=True) -> dict:
+    def qualifier_metrics(self, misses: bool = True) -> dict:
         """
         Computes metrics for qualifiers, including precision, recall and f1-score.
         Only computes metrics for combinations of annotations with the same start
