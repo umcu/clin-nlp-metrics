@@ -1,49 +1,43 @@
 {
   "projects": [
     {
-      "name": "test_project",
-      "id": 5,
+      "name": "metrics-test-data",
+      "id": 9,
       "cuis": "",
       "documents": [
         {
-          "id": 5188,
-          "name": "doc_45934838",
-          "text": "random text sample",
-          "last_modified": "2023-07-11 13:34:43.588925",
+          "id": 5724,
+          "name": "doc_0",
+          "text": "patient had geen anemie",
+          "last_modified": "2023-10-05 13:16:37.446901",
           "annotations": [
             {
-              "id": 3711,
+              "id": 5865,
               "user": "test_user",
               "cui": "C0002871_anemie",
-              "value": "erytransfusie",
-              "start": 1055,
-              "end": 1068,
+              "value": "anemie",
+              "start": 17,
+              "end": 23,
               "validated": true,
               "correct": true,
-              "deleted": true,
+              "deleted": false,
               "alternative": false,
               "killed": false,
               "irrelevant": false,
-              "create_time": "2023-07-12 08:14:12.072532",
-              "last_modified": "2023-07-12 08:14:32.213111",
+              "create_time": "2023-10-05 13:17:58.557460",
+              "last_modified": "2023-10-05 13:18:01.836882",
               "comment": null,
               "manually_created": false,
               "meta_anns": {
-                "Negation": {
-                  "name": "Negation",
-                  "value": "Affirmed",
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
                   "acc": 1.0,
                   "validated": true
                 },
                 "Plausibility": {
                   "name": "Plausibility",
                   "value": "Plausible",
-                  "acc": 1.0,
-                  "validated": true
-                },
-                "Temporality": {
-                  "name": "Temporality",
-                  "value": "Current",
                   "acc": 1.0,
                   "validated": true
                 },
@@ -52,42 +46,57 @@
                   "value": "Patient",
                   "acc": 1.0,
                   "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Negated",
+                  "acc": 1.0,
+                  "validated": true
                 }
               }
-            },
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5725,
+          "name": "doc_1",
+          "text": "er was sprake van prematuriteit (<p3), ",
+          "last_modified": "2023-10-05 13:16:37.447471",
+          "annotations": [
             {
-              "id": 3713,
+              "id": 5866,
               "user": "test_user",
-              "cui": "C0002871_anemie",
-              "value": "anemie",
-              "start": 978,
-              "end": 984,
+              "cui": "C0151526_prematuriteit",
+              "value": "prematuriteit",
+              "start": 18,
+              "end": 31,
               "validated": true,
               "correct": true,
               "deleted": false,
               "alternative": false,
               "killed": false,
               "irrelevant": false,
-              "create_time": "2023-07-12 08:14:12.087135",
-              "last_modified": "2023-07-12 08:14:17.291186",
+              "create_time": "2023-10-05 13:18:05.971341",
+              "last_modified": "2023-10-05 13:18:28.372881",
               "comment": null,
               "manually_created": false,
               "meta_anns": {
-                "Plausibility": {
-                  "name": "Plausibility",
-                  "value": "Plausible",
-                  "acc": 1.0,
-                  "validated": true
-                },
                 "Temporality": {
                   "name": "Temporality",
                   "value": "Current",
                   "acc": 1.0,
                   "validated": true
                 },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
                 "Negation": {
                   "name": "Negation",
-                  "value": "NEGATED",
+                  "value": "Affirmed",
                   "acc": 1.0,
                   "validated": true
                 },
@@ -103,28 +112,552 @@
           "relations": []
         },
         {
-          "id": 5189,
-          "name": "doc_89358935839",
-          "text": "some test text",
-          "last_modified": "2023-07-11 13:34:43.589582",
+          "id": 5726,
+          "name": "doc_2",
+          "text": "een oesophagusatresie was niet uit te sluiten",
+          "last_modified": "2023-10-05 13:16:37.447757",
           "annotations": [
             {
-              "id": 3797,
+              "id": 5868,
               "user": "test_user",
-              "cui": "C0015934_intrauterine_groeivertraging",
-              "value": "<< p3",
-              "start": 1739,
-              "end": 1744,
+              "cui": "C0014850_oesophagus_atresie",
+              "value": "oesophagusatresie",
+              "start": 4,
+              "end": 21,
               "validated": true,
               "correct": true,
               "deleted": false,
               "alternative": false,
               "killed": false,
               "irrelevant": false,
-              "create_time": "2023-07-12 09:55:48.161650",
-              "last_modified": "2023-07-12 09:55:48.161688",
+              "create_time": "2023-10-05 13:18:31.672612",
+              "last_modified": "2023-10-05 13:18:33.308416",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Hypothetical",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5727,
+          "name": "doc_3",
+          "text": "patient had een prematuur adempatroon",
+          "last_modified": "2023-10-05 13:16:37.448005",
+          "annotations": [
+            {
+              "id": 5869,
+              "user": "test_user",
+              "cui": "C0151526_prematuriteit",
+              "value": "prematuur",
+              "start": 16,
+              "end": 25,
+              "validated": true,
+              "correct": false,
+              "deleted": true,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:18:36.307166",
+              "last_modified": "2023-10-05 13:18:39.217204",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {}
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5728,
+          "name": "doc_4",
+          "text": "in de voorgeschiedenis geen bloeding",
+          "last_modified": "2023-10-05 13:16:37.448296",
+          "annotations": [
+            {
+              "id": 5870,
+              "user": "test_user",
+              "cui": "C0270191_intraventriculaire_bloeding",
+              "value": "bloeding",
+              "start": 28,
+              "end": 36,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:18:40.373348",
+              "last_modified": "2023-10-05 13:18:42.266296",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Negated",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Historical",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5729,
+          "name": "doc_5",
+          "text": "bloeding",
+          "last_modified": "2023-10-05 13:16:37.448543",
+          "annotations": [
+            {
+              "id": 5871,
+              "user": "test_user",
+              "cui": "C0270191_intraventriculaire_bloeding",
+              "value": "bloeding",
+              "start": 0,
+              "end": 8,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:18:44.824198",
+              "last_modified": "2023-10-05 13:18:46.422453",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5730,
+          "name": "doc_6",
+          "text": "na fototherapie verminderde hyperbillirubinaemie",
+          "last_modified": "2023-10-05 13:16:37.448790",
+          "annotations": [
+            {
+              "id": 5872,
+              "user": "test_user",
+              "cui": "C0020433_hyperbilirubinemie",
+              "value": "fototherapie",
+              "start": 3,
+              "end": 15,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:18:47.470046",
+              "last_modified": "2023-10-05 13:18:49.736137",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            },
+            {
+              "id": 5873,
+              "user": "test_user",
+              "cui": "C0020433_hyperbilirubinemie",
+              "value": "hyperbillirubinaemie",
+              "start": 28,
+              "end": 48,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:19:22.689238",
+              "last_modified": "2023-10-05 13:19:22.689287",
               "comment": null,
               "manually_created": true,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5731,
+          "name": "doc_7",
+          "text": "patient aangemeld voor ROP screening",
+          "last_modified": "2023-10-05 13:16:37.449038",
+          "annotations": [
+            {
+              "id": 5874,
+              "user": "test_user",
+              "cui": "C0035344_retinopathie_van_de_prematuriteit",
+              "value": "ROP",
+              "start": 23,
+              "end": 26,
+              "validated": true,
+              "correct": false,
+              "deleted": true,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:19:26.798229",
+              "last_modified": "2023-10-05 13:19:29.083743",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {}
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5732,
+          "name": "doc_8",
+          "text": "controle op ROP na 4 weken",
+          "last_modified": "2023-10-05 13:16:37.449405",
+          "annotations": [
+            {
+              "id": 5875,
+              "user": "test_user",
+              "cui": "C0035344_retinopathie_van_de_prematuriteit",
+              "value": "ROP",
+              "start": 12,
+              "end": 15,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:19:30.302099",
+              "last_modified": "2023-10-05 13:19:31.945250",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Historical",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Hypothetical",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5733,
+          "name": "doc_9",
+          "text": "patient had slechte start",
+          "last_modified": "2023-10-05 13:16:37.449710",
+          "annotations": [
+            {
+              "id": 5876,
+              "user": "test_user",
+              "cui": "C0559477_perinatale_asfyxie",
+              "value": "slechte start",
+              "start": 12,
+              "end": 25,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:19:54.137475",
+              "last_modified": "2023-10-05 13:19:54.137514",
+              "comment": null,
+              "manually_created": true,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5734,
+          "name": "doc_10",
+          "text": "behandeling volgens MIST protocol",
+          "last_modified": "2023-10-05 13:16:37.450009",
+          "annotations": [
+            {
+              "id": 5877,
+              "user": "test_user",
+              "cui": "C0035220_infant_respiratory_distress_syndrome",
+              "value": "MIST",
+              "start": 20,
+              "end": 24,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:20:01.870155",
+              "last_modified": "2023-10-05 13:20:01.870191",
+              "comment": null,
+              "manually_created": true,
+              "meta_anns": {
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5735,
+          "name": "doc_11",
+          "text": "familiair belast met anemie",
+          "last_modified": "2023-10-05 13:16:37.450308",
+          "annotations": [
+            {
+              "id": 5878,
+              "user": "test_user",
+              "cui": "C0002871_anemie",
+              "value": "anemie",
+              "start": 21,
+              "end": 27,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:20:03.309118",
+              "last_modified": "2023-10-05 13:20:06.709652",
+              "comment": null,
+              "manually_created": false,
+              "meta_anns": {
+                "Negation": {
+                  "name": "Negation",
+                  "value": "Affirmed",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Plausibility": {
+                  "name": "Plausibility",
+                  "value": "Plausible",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Experiencer": {
+                  "name": "Experiencer",
+                  "value": "Other",
+                  "acc": 1.0,
+                  "validated": true
+                }
+              }
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5736,
+          "name": "doc_12",
+          "text": "mogelijk dysmatuur als gevolg van TTTS",
+          "last_modified": "2023-10-05 13:16:37.450547",
+          "annotations": [
+            {
+              "id": 5880,
+              "user": "test_user",
+              "cui": "C0015934_intrauterine_groeivertraging",
+              "value": "dysmatuur",
+              "start": 9,
+              "end": 18,
+              "validated": true,
+              "correct": true,
+              "deleted": false,
+              "alternative": false,
+              "killed": false,
+              "irrelevant": false,
+              "create_time": "2023-10-05 13:20:12.992428",
+              "last_modified": "2023-10-05 13:20:14.363394",
+              "comment": null,
+              "manually_created": false,
               "meta_anns": {
                 "Negation": {
                   "name": "Negation",
@@ -151,66 +684,31 @@
                   "validated": true
                 }
               }
-            },
+            }
+          ],
+          "relations": []
+        },
+        {
+          "id": 5737,
+          "name": "doc_13",
+          "text": "betreft een Premature zuigeling",
+          "last_modified": "2023-10-05 13:16:37.450772",
+          "annotations": [
             {
-              "id": 3798,
+              "id": 5881,
               "user": "test_user",
-              "cui": "C0015934_intrauterine_groeivertraging",
-              "value": "<p3",
-              "start": 1828,
-              "end": 1831,
+              "cui": "C0151526_prematuriteit",
+              "value": "Premature",
+              "start": 12,
+              "end": 21,
               "validated": true,
               "correct": true,
               "deleted": false,
               "alternative": false,
               "killed": false,
               "irrelevant": false,
-              "create_time": "2023-07-12 09:56:00.757141",
-              "last_modified": "2023-07-12 09:56:00.757174",
-              "comment": null,
-              "manually_created": true,
-              "meta_anns": {
-                "Negation": {
-                  "name": "Negation",
-                  "value": "Affirmed",
-                  "acc": 1.0,
-                  "validated": true
-                },
-                "Temporality": {
-                  "name": "Temporality",
-                  "value": "Current",
-                  "acc": 1.0,
-                  "validated": true
-                },
-                "Plausibility": {
-                  "name": "Plausibility",
-                  "value": "Plausible",
-                  "acc": 1.0,
-                  "validated": true
-                },
-                "Experiencer": {
-                  "name": "Experiencer",
-                  "value": "Patient",
-                  "acc": 1.0,
-                  "validated": true
-                }
-              }
-            },
-            {
-              "id": 3799,
-              "user": "test_user",
-              "cui": "C0015934_intrauterine_groeivertraging",
-              "value": "<p3",
-              "start": 1856,
-              "end": 1859,
-              "validated": true,
-              "correct": true,
-              "deleted": false,
-              "alternative": false,
-              "killed": false,
-              "irrelevant": false,
-              "create_time": "2023-07-12 09:56:07.258691",
-              "last_modified": "2023-07-12 09:56:07.258730",
+              "create_time": "2023-10-05 13:20:31.858473",
+              "last_modified": "2023-10-05 13:20:31.858507",
               "comment": null,
               "manually_created": true,
               "meta_anns": {
@@ -226,15 +724,15 @@
                   "acc": 1.0,
                   "validated": true
                 },
-                "Temporality": {
-                  "name": "Temporality",
-                  "value": "Current",
-                  "acc": 1.0,
-                  "validated": true
-                },
                 "Experiencer": {
                   "name": "Experiencer",
                   "value": "Patient",
+                  "acc": 1.0,
+                  "validated": true
+                },
+                "Temporality": {
+                  "name": "Temporality",
+                  "value": "Current",
                   "acc": 1.0,
                   "validated": true
                 }

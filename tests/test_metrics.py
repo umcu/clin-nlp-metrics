@@ -1,125 +1,102 @@
-import json
-import pickle
+import pytest
 
-import clinlp  # noqa: F401
-
-from clin_nlp_metrics.dataset import Annotation, Dataset, Document
+from clin_nlp_metrics import Metrics
 
 
-class TestAnnotation:
-    def test_annotation_nervaluate(self):
-        ann = Annotation(text="test", start=0, end=5, label="test")
+class TestMetrics:
+    def test_entity_metrics(self, mctrainer_dataset, clinlp_dataset):
+        nlp_metrics = Metrics(mctrainer_dataset, clinlp_dataset)
 
-        assert ann.to_nervaluate() == {"start": 0, "end": 5, "label": "test"}
+        metrics = nlp_metrics.entity_metrics()
 
+        assert list(metrics.keys()) == ["ent_type", "partial", "strict", "exact"]
+        assert metrics["strict"]["actual"] == 11
+        assert metrics["strict"]["correct"] == 10
+        assert metrics["strict"]["precision"] == 0.9090909090909091
+        assert metrics["strict"]["recall"] == 0.7692307692307693
+        assert metrics["strict"]["f1"] == 0.8333333333333333
 
-class TestDocument:
-    def test_document_nervaluate(self):
-        doc = Document(
-            identifier="1",
-            text="test1 and test2",
-            annotations=[
-                Annotation(text="test1", start=0, end=5, label="test1"),
-                Annotation(text="test2", start=10, end=15, label="test2"),
-            ],
-        )
+    def test_entity_metrics_filter(self, mctrainer_dataset, clinlp_dataset):
+        def filter_default(ann):
+            return all(qualifier["is_default"] for qualifier in ann.qualifiers)
 
-        assert doc.to_nervaluate() == [
-            {"start": 0, "end": 5, "label": "test1"},
-            {"start": 10, "end": 15, "label": "test2"},
-        ]
+        nlp_metrics = Metrics(mctrainer_dataset, clinlp_dataset)
+        metrics = nlp_metrics.entity_metrics(ann_filter=filter_default)
 
+        assert metrics["strict"]["actual"] == 6
+        assert metrics["strict"]["correct"] == 4
+        assert metrics["strict"]["precision"] == 0.6666666666666666
+        assert metrics["strict"]["recall"] == 0.5
+        assert metrics["strict"]["f1"] == 0.5714285714285715
 
-class TestDataset:
-    def test_dataset_from_medcattrainer(self):
-        with open("tests/data/medcattrainer_export.json", "rb") as f:
-            mctrainer_data = json.load(f)
+    def test_entity_metrics_classes(self, mctrainer_dataset, clinlp_dataset):
+        nlp_metrics = Metrics(mctrainer_dataset, clinlp_dataset)
 
-        dataset = Dataset.from_medcattrainer(data=mctrainer_data)
+        metrics = nlp_metrics.entity_metrics(classes=True)
 
-        assert len(dataset.docs) == 2
-        assert dataset.docs[0].text == "random text sample"
-        assert len(dataset.docs[0].annotations) == 1
-        assert len(dataset.docs[1].annotations) == 3
+        assert len(metrics) == 9
+        assert metrics["C0151526_prematuriteit"]["strict"]["actual"] == 2
+        assert metrics["C0151526_prematuriteit"]["strict"]["correct"] == 1
+        assert metrics["C0151526_prematuriteit"]["strict"]["precision"] == 0.5
+        assert metrics["C0151526_prematuriteit"]["strict"]["recall"] == 0.5
+        assert metrics["C0151526_prematuriteit"]["strict"]["f1"] == 0.5
 
-        assert dataset.docs[0].annotations[0].text == "anemie"
-        assert dataset.docs[0].annotations[0].start == 978
-        assert dataset.docs[0].annotations[0].end == 984
-        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
+    def test_qualifier_metrics(self, mctrainer_dataset, clinlp_dataset):
+        nlp_metrics = Metrics(mctrainer_dataset, clinlp_dataset)
 
-        assert dataset.docs[1].annotations[0].text == "<< p3"
-        assert dataset.docs[1].annotations[0].start == 1739
-        assert dataset.docs[1].annotations[0].end == 1744
-        assert (
-            dataset.docs[1].annotations[0].label
-            == "C0015934_intrauterine_groeivertraging"
-        )
+        metrics = nlp_metrics.qualifier_metrics()
 
-        assert dataset.docs[0].annotations[0].qualifiers == [
-            {"name": "Plausibility", "value": "Plausible"},
-            {"name": "Temporality", "value": "Current"},
-            {"name": "Negation", "value": "Negated"},
-            {"name": "Experiencer", "value": "Patient"},
-        ]
+        assert metrics["Negation"]["metrics"] == {
+            "n": 10,
+            "n_pos_pred": 2,
+            "n_pos_true": 2,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+        }
+        assert metrics["Experiencer"]["metrics"] == {
+            "n": 10,
+            "n_pos_pred": 1,
+            "n_pos_true": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+        }
+        assert metrics["Plausibility"]["metrics"] == {
+            "n": 10,
+            "n_pos_pred": 2,
+            "n_pos_true": 2,
+            "precision": 0.5,
+            "recall": 0.5,
+            "f1": 0.5,
+        }
+        assert metrics["Temporality"]["metrics"] == {
+            "n": 10,
+            "n_pos_pred": 1,
+            "n_pos_true": 2,
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666,
+        }
 
-    def test_dataset_from_clinlp(self):
-        with open("tests/data/clinlp_docs.pickle", "rb") as f:
-            clinlp_docs = pickle.load(f)
+    def test_qualifier_misses(self, mctrainer_dataset, clinlp_dataset):
+        nlp_metrics = Metrics(mctrainer_dataset, clinlp_dataset)
 
-        dataset = Dataset.from_clinlp_docs(nlp_docs=clinlp_docs)
+        metrics = nlp_metrics.qualifier_metrics()
 
-        assert len(dataset.docs) == 3
-        assert dataset.docs[0].text == "patient had geen anemie"
-        assert len(dataset.docs[0].annotations) == 1
-        assert len(dataset.docs[1].annotations) == 2
-        assert len(dataset.docs[2].annotations) == 1
+        assert len(metrics["Negation"]["misses"]) == 0
+        assert len(metrics["Experiencer"]["misses"]) == 0
+        assert len(metrics["Plausibility"]["misses"]) == 2
+        assert len(metrics["Temporality"]["misses"]) == 1
 
-        assert dataset.docs[0].annotations[0].text == "anemie"
-        assert dataset.docs[0].annotations[0].start == 17
-        assert dataset.docs[0].annotations[0].end == 23
-        assert dataset.docs[0].annotations[0].label == "C0002871_anemie"
+    def test_create_metrics_unequal_length(self, mctrainer_dataset, clinlp_dataset):
+        mctrainer_dataset.docs = mctrainer_dataset.docs[:-2]
 
-        assert dataset.docs[1].annotations[0].text == "prematuriteit"
-        assert dataset.docs[1].annotations[0].start == 18
-        assert dataset.docs[1].annotations[0].end == 31
-        assert dataset.docs[1].annotations[0].label == "C0151526_prematuriteit"
+        with pytest.raises(ValueError):
+            _ = Metrics(mctrainer_dataset, clinlp_dataset)
 
-        assert sorted(
-            dataset.docs[0].annotations[0].qualifiers, key=lambda q: q["name"]
-        ) == [
-            {"name": "Experiencer", "value": "Patient", "is_default": True},
-            {"name": "Negation", "value": "Negated", "is_default": False},
-            {"name": "Plausibility", "value": "Plausible", "is_default": True},
-            {"name": "Temporality", "value": "Current", "is_default": True},
-        ]
+    def test_create_metrics_unequal_names(self, mctrainer_dataset, clinlp_dataset):
+        mctrainer_dataset.docs[0].identifier = "test"
 
-    def test_dataset_nervaluate(self):
-        dataset = Dataset(
-            docs=[
-                Document(
-                    identifier="1",
-                    text="test1",
-                    annotations=[
-                        Annotation(
-                            text="test1",
-                            start=0,
-                            end=5,
-                            label="test1",
-                            qualifiers=[{"name": "Negation", "value": "Negated"}],
-                        ),
-                    ],
-                ),
-                Document(
-                    identifier="2",
-                    text="test2",
-                    annotations=[
-                        Annotation(text="test2", start=0, end=5, label="test2"),
-                    ],
-                ),
-            ]
-        )
-
-        assert dataset.to_nervaluate() == [
-            [{"start": 0, "end": 5, "label": "test1"}],
-            [{"start": 0, "end": 5, "label": "test2"}],
-        ]
+        with pytest.raises(ValueError):
+            _ = Metrics(mctrainer_dataset, clinlp_dataset)
