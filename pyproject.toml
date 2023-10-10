@@ -19,7 +19,7 @@ dependencies = ["spacy~=3.0", "clinlp>=0.6"]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
-dev = ["black", "flake8", "flake8-pyproject", "isort", "rsconnect-python"]
+dev = ["black", "flake8", "flake8-pyproject", "isort"]
 
 [tool.black]
 line-length = 88
