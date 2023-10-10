@@ -111,7 +111,7 @@ Create a `Metrics` object as follows:
 ```python
 from clin_nlp_metrics import Metrics
 
-metrics = Metrics(d1, d2)
+nlp_metrics = Metrics(d1, d2)
 
 nlp_metrics.entity_metrics()
 ```
